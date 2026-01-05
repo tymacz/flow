@@ -5,12 +5,30 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    const prenom = 'Maxence';
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        leading: const Image(image: AssetImage('assets/logo.png'),width: 500,),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              // Action when settings icon is pressed
+            },
+          ),
+        ],
+        leadingWidth: 100,
       ),
-      body: const Center(
-        child: Text('Welcome to the Home Page!'),
+      body:  SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          
+          children: [
+            Text('Bonjour,', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+            Text('$prenom 👋', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color.fromRGBO(56, 107, 246, 1)))] 
+      ),
       ),
     );
   }

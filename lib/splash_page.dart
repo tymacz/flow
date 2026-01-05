@@ -17,6 +17,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _afficherSplashEtNaviguer() async {
+
+    FlutterNativeSplash.remove();
     await Future.delayed(const Duration(seconds: 3));
 
     if (mounted) {
