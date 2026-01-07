@@ -28,12 +28,14 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20), 
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20), 
               const Text(
                 'Bonjour,',
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
@@ -111,50 +113,127 @@ class HomePage extends StatelessWidget {
               const Text('Besoin de souffler ?', style: TextStyle(fontSize: 24,color: Colors.black),),
               const SizedBox(height: 20),
               Row(
-                children: [
-                   Container(
+              children: [
+                
+                Expanded( 
+                  child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromRGBO(165, 243,252, 1),
+                      color: const Color.fromRGBO(165, 243, 252, 1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Icon(Icons.favorite),
-                              Icon(Icons.air),
-                            ],
-                          ),
                           
-                          Text('Cohérence cardiaque')
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Icon(Icons.air),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          
+                          const Text(
+                            'Cohérence cardiaque',
+                            textAlign: TextAlign.left, 
+                            style: TextStyle(fontSize: 18),
+                            
+                          )
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(width: 20,),
-                  Container(
+                ),
+                
+                const SizedBox(width: 20), 
+
+                
+                Expanded(
+                  child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromRGBO(165, 243,252, 1),
+                      color: const Color.fromRGBO(165, 243, 252, 1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          Icon(Icons.category_sharp),
-                          Text('Catalogue s\'activités')
+                          
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Icon(Icons.category_sharp),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          
+                          const Text(
+                            "Catalogue d'activités",
+                            textAlign: TextAlign.left,
+                            style: TextStyle( fontSize: 18),
+                          )
                         ],
                       ),
                     ),
                   ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Text('Conseils du jour', style: TextStyle(fontSize: 24,color: Colors.black),),
+            SizedBox(height: 20),
+            Container(
+              height: 250,
+              width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                 boxShadow: [
+    BoxShadow(
+      color: Color.fromRGBO(50, 50, 93, 0.25),
+      blurRadius: 27,
+      spreadRadius: -5,
+      offset: Offset(0, 13),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.3),
+      blurRadius: 16,
+      spreadRadius: -8,
+      offset: Offset(0, 8),
+    )
+  ] ,),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Article',
+                     style: TextStyle(fontSize: 18,color: Colors.blue),
+                     textAlign: TextAlign.left,
+                  ),
+                  SizedBox(height: 10),
+                  Text('Comprendre le stress chronique', style: TextStyle(fontSize: 18,color: Colors.black),),
                 ],
-              )
+              ),
+            ),)
             ],
           ),
+          
         ),
-      ),
+      ),)
     );
   }
 }
