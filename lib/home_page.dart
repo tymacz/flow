@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final VoidCallback? onSettingsPressed;
+  final VoidCallback? onPressedCatalogue;
+  const HomePage({super.key, this.onSettingsPressed,this.onPressedCatalogue});
 
   @override
   Widget build(BuildContext context) {
@@ -10,6 +12,8 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color.fromRGBO(249,250, 248, 1),
       appBar: AppBar(
+        backgroundColor: Color.fromRGBO(249,250, 248, 1),
+        surfaceTintColor: Color.fromRGBO(249,250, 248, 1),
         leading: Padding(
     padding: const EdgeInsets.only(left: 20.0), // 20px de marge à gauche
     child: const Image(
@@ -22,7 +26,7 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.only(right: 20.0),
       child: IconButton(
         icon: const Icon(Icons.settings),
-        onPressed: () {},
+        onPressed: onSettingsPressed,
       ),
     ),
         ],
@@ -156,36 +160,40 @@ class HomePage extends StatelessWidget {
 
                 
                 Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(165, 243, 252, 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(50),
+                  child: GestureDetector(
+                    onTap:  onPressedCatalogue
+                    ,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(165, 243, 252, 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          children: [
+                            
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Icon(Icons.category_sharp),
                               ),
-                              child: const Icon(Icons.category_sharp),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          
-                          const Text(
-                            "Catalogue d'activités",
-                            textAlign: TextAlign.left,
-                            style: TextStyle( fontSize: 18),
-                          )
-                        ],
+                            const SizedBox(height: 10),
+                            
+                            const Text(
+                              "Catalogue d'activités",
+                              textAlign: TextAlign.left,
+                              style: TextStyle( fontSize: 18),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),

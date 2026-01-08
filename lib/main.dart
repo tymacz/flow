@@ -1,4 +1,5 @@
 import 'package:flow/home_page.dart';
+import 'package:flow/profil_page.dart';
 import 'package:flow/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -26,13 +27,22 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PersistentTabController _controller = PersistentTabController(initialIndex: 0);
     List<Widget> _buildScreens() {
-        return [
-          HomePage(),
-          screen2(),
-          screen3(),
-          screen4(),
-        ];
+    return [
+        HomePage(
+          onSettingsPressed: () {
+            _controller.jumpToTab(4); 
+          },
+          onPressedCatalogue: (){
+            _controller.jumpToTab(1);
+          },
+        ),
+        const screen2(),
+        const screen3(),
+        const screen4(),
+        const ProfilPage(),
+      ];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -45,9 +55,16 @@ class BottomNavBar extends StatelessWidget {
                 inactiveColorPrimary: Color.fromARGB(255, 108, 122, 141),
             ),
             PersistentBottomNavBarItem(
-                icon: Icon(Icons.fitness_center),
-                inactiveIcon: Icon(Icons.fitness_center_outlined),
+                icon: Icon(Icons.self_improvement),
+                inactiveIcon: Icon(Icons.self_improvement_outlined),
                 title: ("Exercices"),
+                activeColorPrimary: Color(0xFF6366F1),
+                inactiveColorPrimary: Color.fromARGB(255, 108, 122, 141),
+            ),
+            PersistentBottomNavBarItem(
+                icon: Icon(Icons.article),
+                inactiveIcon: Icon(Icons.article_outlined),
+                title: ("Articles"),
                 activeColorPrimary: Color(0xFF6366F1),
                 inactiveColorPrimary: Color.fromARGB(255, 108, 122, 141),
             ),
@@ -67,7 +84,6 @@ class BottomNavBar extends StatelessWidget {
             ),
         ];
     }
-    PersistentTabController _controller;
 
 _controller = PersistentTabController(initialIndex: 0);
     return  PersistentTabView(
