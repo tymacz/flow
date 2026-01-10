@@ -35,6 +35,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  girix_code_gauge: ^0.0.6
 
 dev_dependencies:
   flutter_native_splash: ^2.3.0
@@ -55,9 +56,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter_launcher_icons:
-  android: 'launcher_icon'
+  android: 'ic_launcher'
   ios : true
-  image_path: "assets/logo.png"
 
 
 flutter_native_splash:

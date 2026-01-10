@@ -1,6 +1,7 @@
-import 'package:flow/home_page.dart';
-import 'package:flow/profil_page.dart';
-import 'package:flow/splash_page.dart';
+import 'package:flow/pages/home_page.dart';
+import 'package:flow/pages/profil_page.dart';
+import 'package:flow/pages/progress_page.dart';
+import 'package:flow/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -40,7 +41,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         const screen2(),
         const screen3(),
-        const screen4(),
+        const ProgressPage(),
         const ProfilPage(),
       ];
     }
@@ -159,22 +160,6 @@ class screen3 extends StatelessWidget {
       ),
       body: const Center(
         child: Text('This is Screen 3'),
-      ),
-    );
-  }
-}
-
-class screen4 extends StatelessWidget {
-  const screen4({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen 4'),
-      ),
-      body: const Center(
-        child: Text('This is Screen 4'),
       ),
     );
   }
