@@ -32,9 +32,9 @@ class ActivityPage extends StatelessWidget {
             child: Column(
               children:[ 
                 ActivityCaroussel(activities: [
-                Activitycarousselelement(name: 'Cohérence cardiaque rapide', icon: Icon(Icons.air,size: 80,color: Colors.white,), durating: '5 min'),
-                Activitycarousselelement(name: 'Méditation guidée', icon: Icon(Icons.self_improvement,size: 80,color: Colors.white,), durating: '10 min'),
-                Activitycarousselelement(name: 'Exercice d\'étirement', icon: Icon(Icons.fitness_center,size: 80,color: Colors.white,), durating: '15 min'),
+                Activitycarousselelement(name: 'Cohérence cardiaque rapide', icon: Icon(Icons.air,size: 50,color: Colors.white,), durating: '5 min'),
+                Activitycarousselelement(name: 'Méditation guidée', icon: Icon(Icons.self_improvement,size: 50,color: Colors.white,), durating: '10 min'),
+                Activitycarousselelement(name: 'Exercice d\'étirement', icon: Icon(Icons.fitness_center,size: 50,color: Colors.white,), durating: '15 min'),
               ] ),
               SizedBox(height: 20,),
               Align(
