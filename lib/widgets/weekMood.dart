@@ -78,7 +78,7 @@ class WeekMood extends StatelessWidget {
             children: [
               const Text(
                 'Humeur de la semaine',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Row(
                 children: [
@@ -92,6 +92,7 @@ class WeekMood extends StatelessWidget {
                     style: TextStyle(
                       color: trendColor,
                       fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
                 ],

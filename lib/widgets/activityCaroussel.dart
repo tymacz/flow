@@ -23,7 +23,7 @@ class _ActivityCarousselState extends State<ActivityCaroussel> {
     return Column(
       children: [
         SizedBox(
-          height: 220, 
+          height: 200, 
           child: PageView.builder(
             controller: _pageController,
             itemCount: widget.activities.length,

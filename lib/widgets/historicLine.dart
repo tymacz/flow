@@ -58,7 +58,7 @@ class _HistoricLineState extends State<HistoricLine> {
             Flexible( 
               child: Text(
                 "${widget.date} - ${widget.activite}",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

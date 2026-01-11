@@ -13,7 +13,7 @@ class _StatSquareState extends State<StatSquare> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      width: 200,
+      width: 150,
       decoration: BoxDecoration(
         color: Color.fromRGBO(165, 243, 252, 1),
         borderRadius: BorderRadius.circular(20.0),
@@ -35,16 +35,16 @@ class _StatSquareState extends State<StatSquare> {
       child: Column(
   crossAxisAlignment: CrossAxisAlignment.center,
   children: [
-    Text(widget.logo, style: const TextStyle(fontSize: 40),),
+    Text(widget.logo, style: const TextStyle(fontSize: 30),),
     SizedBox(height: 10),
     Text(
       widget.value,
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     ),
     SizedBox(height: 5),
     Text(
       widget.label,
-      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
     ),
   ]
 )

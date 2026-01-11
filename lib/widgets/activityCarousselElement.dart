@@ -16,6 +16,7 @@ class _ActivitycarousselelementState extends State<Activitycarousselelement> {
     return Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                     Align(
                       alignment: Alignment.centerLeft,
@@ -24,11 +25,10 @@ class _ActivitycarousselelementState extends State<Activitycarousselelement> {
                         children: [
                           widget.icon,
                           SizedBox(width: 10),
-                          Flexible(child: Text(widget.name,overflow: TextOverflow.clip, style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold, color: Colors.white))),
+                          Flexible(child: Text(widget.name,overflow: TextOverflow.clip, style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold, color: Colors.white))),
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
                     TextButton(style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.white)), onPressed: () {  }, child: Text('Démarrer ( ${widget.durating} )', style: TextStyle(fontSize: 18, color: Colors.black))),
               ],
             ),
