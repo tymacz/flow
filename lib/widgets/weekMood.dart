@@ -137,7 +137,7 @@ class WeekMood extends StatelessWidget {
                       alignment: Alignment.bottomCenter,
                       child: TweenAnimationBuilder<double>(
                         tween: Tween<double>(begin: 0, end: targetHeight),
-                        duration: Duration(milliseconds: 600 + (index * 100)),
+                        duration: Duration(milliseconds: 1000 + (index * 100)),
                         curve: Curves.easeOutBack, // Effet rebond
                         builder: (context, animatedHeight, child) {
                           return Container(
