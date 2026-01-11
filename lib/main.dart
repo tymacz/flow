@@ -1,3 +1,4 @@
+import 'package:flow/pages/activity_page.dart';
 import 'package:flow/pages/home_page.dart';
 import 'package:flow/pages/profil_page.dart';
 import 'package:flow/pages/progress_page.dart';
@@ -39,7 +40,7 @@ class BottomNavBar extends StatelessWidget {
             _controller.jumpToTab(1);
           },
         ),
-        const screen2(),
+        const ActivityPage(),
         const screen3(),
         const ProgressPage(),
         const ProfilPage(),
@@ -114,38 +115,6 @@ _controller = PersistentTabController(initialIndex: 0);
         navBarHeight: kBottomNavigationBarHeight,
         navBarStyle: NavBarStyle.style3,
       );
-  }
-}
-
-class screen1 extends StatelessWidget {
-  const screen1({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen 1'),
-      ),
-      body: const Center(
-        child: Text('This is Screen 1'),
-      ),
-    );
-  }
-}
-
-class screen2 extends StatelessWidget {
-  const screen2({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen 2'),
-      ),
-      body: const Center(
-        child: Text('This is Screen 2'),
-      ),
-    );
   }
 }
 
