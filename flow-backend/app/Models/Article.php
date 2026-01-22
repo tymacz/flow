@@ -6,11 +6,13 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class Article extends Model
 {
+    protected $connection = 'mongodb';
     protected $collection = 'articles';
 
-    protected $fillable = [
-        'titre', 'description', 'image_url',
-        'duree_affichage', 'duree_secondes',
-        'type', 'media_url'
+    protected $fillable = ['titre', 'contenu', 'auteur', 'tags', 'image_url', 'date_publication'];
+
+    protected $casts = [
+        'tags' => 'array',
+        'date_publication' => 'datetime'
     ];
 }

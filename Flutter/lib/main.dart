@@ -4,13 +4,16 @@ import 'package:flow/pages/profil_page.dart';
 import 'package:flow/pages/progress_page.dart';
 import 'package:flow/pages/splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  runApp(const MyApp());
+  runApp(const ProviderScope(
+      child: MyApp(),
+    ));
 }
 
 class MyApp extends StatelessWidget {
