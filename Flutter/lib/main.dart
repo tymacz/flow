@@ -7,13 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+void main() async { // <--- Ajoute async
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // 👇 INITIALISATION SUPABASE (Remplace par TES clés)
+  await Supabase.initialize(
+    url: 'https://byxhmtkvstrvpljeawaa.supabase.co', 
+    anonKey: 'sb_publishable_B73v7SqnOBYrOObTe9nmFA_f4RschCJ', 
+  );
+
   runApp(const ProviderScope(
       child: MyApp(),
-    ));
+  ));
 }
 
 class MyApp extends StatelessWidget {

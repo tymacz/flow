@@ -1,3 +1,4 @@
+import 'package:flow/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
@@ -15,18 +16,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _submit() async {
+Future<void> _submit() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
+    // 1. On tente le login
     final success = await ref.read(authUserProvider.notifier).login(
       _emailCtrl.text.trim(),
       _passCtrl.text.trim(),
     );
 
-    if (!success && mounted) {
+    if (!mounted) return;
+
+    // 2. SI C'EST BON -> ON CHANGE DE PAGE 🚀
+    if (success) {
+      // On remplace l'écran de login par la barre de navigation (qui contient l'accueil)
+      // Assure-toi d'importer le fichier main.dart où se trouve BottomNavBar
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+      );
+    } 
+    // 3. SI C'EST PAS BON -> ERREUR
+    else {
       setState(() {
         _errorMessage = "Email ou mot de passe incorrect";
         _isLoading = false;

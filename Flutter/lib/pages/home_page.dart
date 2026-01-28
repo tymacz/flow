@@ -58,11 +58,10 @@ class HomePage extends ConsumerWidget {
                 // GESTION DU PRÉNOM DYNAMIQUE
                 userState.when(
                   data: (user) {
-                    if (user == null) {
-                      return const SizedBox.shrink(); // Affiche rien si pas connecté
-                    }
+                    String displayName = user != null ? '${user.prenom} 👋' : 'Citoyen';
+                    
                     return Text(
-                      '${user.prenom} 👋',
+                      displayName, // Affiche "Invité" ou le prénom
                       style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -70,8 +69,8 @@ class HomePage extends ConsumerWidget {
                       ),
                     );
                   },
-                  loading: () => const Text('...', style: TextStyle(fontSize: 36)),
-                  error: (err, stack) => const SizedBox.shrink(),
+                  loading: () => const CircularProgressIndicator(), // Montre que ça charge
+                  error: (err, stack) => Text('Erreur: $err'), // Affiche l'erreur si connexion impossible
                 ),
                 
                 const SizedBox(height: 40),

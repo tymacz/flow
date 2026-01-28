@@ -14,15 +14,17 @@ class User extends Model implements AuthenticatableContract
 
     protected $connection = 'mongodb';
     protected $collection = 'utilisateurs';
-
     protected $fillable = [
         'prenom', 'nom', 'email', 'password', 'role',
-        'avatar_url', 'date_inscription', 'favoris_ids'
+        'avatar_url',
+        'preferences',
+        'date_inscription', 'favoris_ids'
     ];
 
     protected $casts = [
         'date_inscription' => 'datetime',
         'favoris_ids' => 'array',
+        'preferences' => 'array',
         'password' => 'hashed',
     ];
 

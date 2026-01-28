@@ -58,6 +58,27 @@ class AuthController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+{
+    $user = $request->user(); // Récupère l'utilisateur connecté via le token
+
+    // On valide les données reçues
+    $validated = $request->validate([
+        'prenom' => 'nullable|string',
+        'nom' => 'nullable|string',
+        'avatar_url' => 'nullable|url', // Doit être une URL valide (Supabase)
+        'preferences' => 'nullable|array', // Doit être un tableau JSON
+    ]);
+
+    // On met à jour uniquement ce qui est envoyé
+    $user->update($validated);
+
+    return response()->json([
+        'message' => 'Profil mis à jour',
+        'user' => $user
+    ]);
+}
+
     // Récupérer son propre profil (Route /user)
     public function me(Request $request)
     {

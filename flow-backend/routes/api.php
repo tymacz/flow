@@ -8,16 +8,18 @@ use App\Http\Controllers\Api\AuthController;
 // Routes Publiques
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/activities', [ContentController::class, 'indexActivities']);
+Route::get('/articles', [ContentController::class, 'indexArticles']);
 
 // Routes Protégées (Nécessite d'être connecté)
 Route::middleware('auth:sanctum')->group(function () {
 
     // Gestion Utilisateur
     Route::get('/user', [AuthController::class, 'me']);
+    Route::put('/user', [AuthController::class, 'updateProfile']);
 
     // Contenu
-    Route::get('/activites', [ContentController::class, 'indexActivities']);
-    Route::get('/articles', [ContentController::class, 'indexArticles']);
+
     Route::post('/activites/{id}/favori', [ContentController::class, 'toggleFavorite']);
 
     // Humeur

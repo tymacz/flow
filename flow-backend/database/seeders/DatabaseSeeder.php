@@ -19,6 +19,25 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('🧹 Base de données nettoyée !');
 
+        User::create([
+            'prenom' => 'Admin',
+            'nom' => 'Flow',
+            'email' => 'admin@flow.com',
+            'password' => Hash::make('password'),
+            'role' => 'ADMIN',
+            'date_inscription' => now(),
+            'avatar_url' => 'https://i.pravatar.cc/300', // Une fausse image pour tester
+            // 👇 ICI : On initialise les préférences pour éviter les bugs Flutter
+            'preferences' => [
+                'notifications' => true,
+                'text_size' => 1,
+                'high_contrast' => false,
+                'reduced_animations' => false
+            ],
+            'favoris_ids' => [],
+        ]);
+        $this->command->info('👤 Admin créé (admin@flow.com / password)');
+
         // 2. Création des Activités (Yoga, Méditation, etc.)
         $activites = [
             [
@@ -26,28 +45,28 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Un enchaînement dynamique de postures de yoga pour réveiller le corps et l\'esprit dès le matin.',
                 'duree_minutes' => 15,
                 'categorie' => 'Yoga',
-                'image_url' => 'https://images.unsplash.com/photo-1544367563-12123d8965cd?auto=format&fit=crop&w=800&q=80',
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg',
             ],
             [
                 'titre' => 'Méditation Guidée : Lâcher Prise',
                 'description' => 'Une séance audio pour apprendre à accepter ses émotions et réduire le stress quotidien.',
                 'duree_minutes' => 10,
                 'categorie' => 'Méditation',
-                'image_url' => 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80',
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg',
             ],
             [
                 'titre' => 'Respiration Carrée (Box Breathing)',
                 'description' => 'Technique de respiration puissante utilisée pour retrouver son calme en situation de stress intense.',
                 'duree_minutes' => 5,
                 'categorie' => 'Respiration',
-                'image_url' => 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80',
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg',
             ],
             [
                 'titre' => 'Séance HIIT : Énergie Maximale',
                 'description' => 'Entraînement par intervalles à haute intensité pour booster le cardio et l\'endorphine.',
                 'duree_minutes' => 20,
                 'categorie' => 'Sport',
-                'image_url' => 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg',
             ]
         ];
 
@@ -64,7 +83,7 @@ class DatabaseSeeder extends Seeder
                 'auteur' => 'Dr. Sophie Zen',
                 'tags' => ['Sommeil', 'Santé', 'Conseils'],
                 'date_publication' => now()->subDays(2),
-                'image_url' => 'https://images.unsplash.com/photo-1511295742362-92c96b504802?auto=format&fit=crop&w=800&q=80'
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg'
             ],
             [
                 'titre' => 'Pourquoi l\'hydratation change votre humeur',
@@ -72,7 +91,7 @@ class DatabaseSeeder extends Seeder
                 'auteur' => 'Marc Eau',
                 'tags' => ['Nutrition', 'Humeur'],
                 'date_publication' => now()->subDays(10),
-                'image_url' => 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=800&q=80'
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg'
             ],
             [
                 'titre' => 'Comprendre le Burn-out',
@@ -80,7 +99,7 @@ class DatabaseSeeder extends Seeder
                 'auteur' => 'Psychologie Mag',
                 'tags' => ['Travail', 'Mental', 'Prévention'],
                 'date_publication' => now()->subMonth(1),
-                'image_url' => 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=800&q=80'
+                'image_url' => 'https://byxhmtkvstrvpljeawaa.supabase.co/storage/v1/object/public/flow-assets/images/activities_flow.jpg'
             ]
         ];
 

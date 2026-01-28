@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
-class SwitchCustom extends StatefulWidget {
-  const SwitchCustom({super.key});
+class SwitchCustom extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
 
-  @override
-  State<SwitchCustom> createState() => _SwitchCustomState();
-}
+  const SwitchCustom({
+    super.key, 
+    required this.value, 
+    required this.onChanged
+  });
 
-class _SwitchCustomState extends State<SwitchCustom> {
-  bool light1 = true;
-
+  // On garde ton design d'icônes
   static const WidgetStateProperty<Icon> thumbIcon = WidgetStateProperty<Icon>.fromMap(
     <WidgetStatesConstraint, Icon>{
       WidgetState.selected: Icon(Icons.check),
@@ -23,14 +24,10 @@ class _SwitchCustomState extends State<SwitchCustom> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Switch(
-          activeTrackColor: Color.fromRGBO(56, 107, 246, 1),
+          activeTrackColor: const Color.fromRGBO(56, 107, 246, 1),
           thumbIcon: thumbIcon,
-          value: light1,
-          onChanged: (bool value) {
-            setState(() {
-              light1 = value;
-            });
-          },
+          value: value, // Utilise la valeur reçue (User Prefs)
+          onChanged: onChanged, // Renvoie la nouvelle valeur au parent
         ),
       ],
     );
