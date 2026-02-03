@@ -22,31 +22,62 @@ class ContentController extends Controller
         return Article::all();
     }
 
+    public function indexFavorites(Request $request)
+    {
+        $user = $request->user();
+
+        // 1. On récupère la liste des IDs (ou un tableau vide si null)
+        $favorisIds = $user->favoris_ids ?? [];
+
+        // 2. On vérifie si la liste est vide pour éviter une requête inutile
+        if (empty($favorisIds)) {
+            return [];
+        }
+
+        // 3. On cherche toutes les activités dont l'ID est DANS ($whereIn) la liste
+        // Note : Avec MongoDB, c'est souvent '_id', mais Eloquent mappe souvent 'id' automatiquement.
+        // Si 'id' ne marche pas, essaie '_id'.
+        $activities = Activity::whereIn('_id', $favorisIds)->get();
+
+        return $activities;
+    }
+
     // Ajouter / Retirer un favori (Le fameux Toggle)
     public function toggleFavorite(Request $request, $id)
     {
         $user = $request->user();
 
-        // On récupère le tableau actuel ou un tableau vide
+        // 1. On récupère le tableau existant (ou vide)
+        // Le cast 'array' dans le modèle User s'occupe de la conversion
         $favoris = $user->favoris_ids ?? [];
 
         if (in_array($id, $favoris)) {
-            // Si l'ID est déjà là, on l'enlève (array_diff)
-            $user->pull('favoris_ids', $id);
+            // --- RETRAIT ---
+            // On enlève l'ID du tableau
+            $favoris = array_diff($favoris, [$id]);
+            // On réindexe le tableau (0, 1, 2...) sinon Mongo stocke un objet {"0": "id", "2": "id"}
+            $favoris = array_values($favoris);
             $message = 'Retiré des favoris';
         } else {
-            // Sinon, on l'ajoute (push)
-            $user->push('favoris_ids', $id);
+            // --- AJOUT ---
+            // On ajoute l'ID à la fin
+            $favoris[] = $id;
+            // On s'assure qu'il est unique (juste au cas où)
+            $favoris = array_unique($favoris);
+            // On réindexe
+            $favoris = array_values($favoris);
             $message = 'Ajouté aux favoris';
         }
 
-        // Pas besoin de $user->save() avec push/pull sur le driver Mongo récent,
-        // mais si ça ne marche pas, décommente la ligne suivante :
-        // $user->save();
+        // 2. On assigne le nouveau tableau à l'utilisateur
+        $user->favoris_ids = $favoris;
+
+        // 3. On sauvegarde explicitement (C'est là que ça plantait avant)
+        $user->save();
 
         return response()->json([
             'message' => $message,
-            'favoris' => $user->fresh()->favoris_ids // On renvoie la liste à jour
+            'favoris' => $user->favoris_ids
         ]);
     }
 }

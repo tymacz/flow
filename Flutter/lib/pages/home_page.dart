@@ -1,3 +1,4 @@
+import 'package:flow/pages/articles_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow/widgets/activityHomePageBloc.dart';
@@ -58,7 +59,7 @@ class HomePage extends ConsumerWidget {
                 // GESTION DU PRÉNOM DYNAMIQUE
                 userState.when(
                   data: (user) {
-                    String displayName = user != null ? '${user.prenom} 👋' : 'Citoyen';
+                    String displayName = user != null ? '${user.prenom} 👋' : 'Citoyen 👋';
                     
                     return Text(
                       displayName, // Affiche "Invité" ou le prénom
@@ -112,6 +113,16 @@ class HomePage extends ConsumerWidget {
                       description: article.description.length > 80 
                           ? '${article.description.substring(0, 80)}...' 
                           : article.description,
+                      ontap: () {
+                        // Navigation vers la page de détail
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ArticleDetailPage(article: article),
+                          ),
+                        );
+                      },
                     );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),

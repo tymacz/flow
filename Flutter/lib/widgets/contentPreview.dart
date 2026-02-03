@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ContentPreview extends StatefulWidget {
-  const ContentPreview({super.key,required this.type, required this.title, required this.description});
+  const ContentPreview({super.key,required this.type, required this.title, required this.description, required this.ontap});
   final String type;
   final String title;
   final String description;
+  final VoidCallback ontap;
   @override
   State<ContentPreview> createState() => _ContentPreviewState();
 }
@@ -14,7 +15,7 @@ class _ContentPreviewState extends State<ContentPreview> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: widget.ontap,
       child: Container(
                 width: double.infinity,
                   decoration: BoxDecoration(

@@ -17,7 +17,7 @@ class Activity {
 
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
-      id: json['_id'] ?? '',
+      id: json['_id'] ??  json['id'] ?? '',
       titre: json['titre'] ?? 'Activité',
       description: json['description'] ?? '',
       dureeMinutes: json['duree_minutes'] ?? 0,

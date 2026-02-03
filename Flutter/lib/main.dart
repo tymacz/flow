@@ -1,4 +1,5 @@
 import 'package:flow/pages/activity_page.dart';
+import 'package:flow/pages/articles_page.dart';
 import 'package:flow/pages/home_page.dart';
 import 'package:flow/pages/profil_page.dart';
 import 'package:flow/pages/progress_page.dart';
@@ -52,7 +53,7 @@ class BottomNavBar extends StatelessWidget {
           },
         ),
         const ActivityPage(),
-        const screen3(),
+        const ArticlesPage(),
         const ProgressPage(),
         const ProfilPage(),
       ];

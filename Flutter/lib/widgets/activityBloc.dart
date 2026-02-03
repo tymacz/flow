@@ -1,31 +1,27 @@
 import 'package:flutter/material.dart';
 
-class Activitybloc extends StatefulWidget {
+class Activitybloc extends StatelessWidget {
   const Activitybloc({
-    super.key, 
-    required this.title, 
-    required this.description, 
-    required this.imagePath, 
-    this.onPressed
+    super.key,
+    required this.title,
+    required this.description,
+    required this.imagePath,
+    this.onPressed,
+    this.isFavorite = false, // Reçu du parent
+    this.onFavoriteToggle, // Action reçue du parent
   });
-  
+
   final String title;
   final String description;
   final String imagePath;
   final VoidCallback? onPressed;
-
-  @override
-  _ActivityblocState createState() => _ActivityblocState();
-}
-
-class _ActivityblocState extends State<Activitybloc> {
-  // 1. Variable pour gérer l'état du favori
-  bool isFavorite = false;
+  final bool isFavorite;
+  final VoidCallback? onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onPressed,
+      onTap: onPressed,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10.0),
         padding: const EdgeInsets.all(15.0),
@@ -44,22 +40,26 @@ class _ActivityblocState extends State<Activitybloc> {
               blurRadius: 16,
               spreadRadius: -8,
               offset: Offset(0, 8),
-            )
+            ),
           ],
         ),
-        // 2. Utilisation de Stack pour superposer les éléments
         child: Stack(
           children: [
-            // Le contenu original (Image + Texte)
             Row(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
                   child: Image.network(
-                    widget.imagePath,
+                    imagePath,
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 15.0),
@@ -67,11 +67,10 @@ class _ActivityblocState extends State<Activitybloc> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Petite astuce : Padding à droite pour éviter que le titre long ne passe sous le cœur
                       Padding(
-                        padding: const EdgeInsets.only(right: 30.0), 
+                        padding: const EdgeInsets.only(right: 30.0),
                         child: Text(
-                          widget.title,
+                          title,
                           style: const TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
@@ -80,32 +79,35 @@ class _ActivityblocState extends State<Activitybloc> {
                       ),
                       const SizedBox(height: 5.0),
                       Text(
-                        widget.description,
+                        description,
                         style: const TextStyle(
                           fontSize: 14.0,
                           color: Colors.grey,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            
-            // 3. Le bouton Cœur positionné en haut à droite
+            // CŒUR
             Positioned(
               top: 0,
               right: 0,
               child: InkWell(
-                onTap: () {
-                  setState(() {
-                    isFavorite = !isFavorite;
-                  });
-                },
-                child: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : Colors.grey,
-                  size: 24.0,
+                onTap: onFavoriteToggle,
+                borderRadius: BorderRadius.circular(50),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite
+                        ? Colors.red
+                        : Colors.grey, // Rouge si true
+                    size: 26.0,
+                  ),
                 ),
               ),
             ),

@@ -84,4 +84,27 @@ class AuthController extends Controller
     {
         return $request->user();
     }
+
+
+    public function toggleFavorite(Request $request, string $activityId)
+{
+    $user = $request->user();
+
+    // On s'assure que c'est bien un tableau (par défaut [] si null)
+    $favoris = $user->favoris_ids ?? [];
+
+    if (in_array($activityId, $favoris)) {
+        $favoris = array_values(array_diff($favoris, [$activityId]));
+    } else {
+        $favoris[] = $activityId;
+    }
+
+    // On sauvegarde
+    $user->update(['favoris_ids' => $favoris]);
+
+    return response()->json([
+        'message' => 'Favoris mis à jour',
+        'favoris' => $favoris
+    ]);
+}
 }
