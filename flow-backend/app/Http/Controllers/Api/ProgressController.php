@@ -76,4 +76,24 @@ class ProgressController extends Controller
             'history' => $history
         ]);
     }
+
+    public function store(Request $request)
+    {
+        // 1. Validation des données reçues
+        $request->validate([
+            'activity_title' => 'required|string',
+            'activity_type' => 'required|string',
+            'duration_minutes' => 'required|integer',
+        ]);
+
+        // 2. Création dans la base de données
+        UserActivity::create([
+            'user_id' => $request->user()->id,
+            'activity_title' => $request->activity_title,
+            'activity_type' => $request->activity_type,
+            'duration_minutes' => $request->duration_minutes,
+        ]);
+
+        return response()->json(['message' => 'Activité enregistrée avec succès !']);
+    }
 }

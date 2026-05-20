@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -7,7 +6,7 @@ class ApiService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   ApiService() {
-    String baseUrl = Platform.isAndroid ? 'http://10.0.2.2:8000/api' : 'http://localhost:8000/api';
+    String baseUrl = 'http://172.20.10.3:8000/api';
     
     _dio.options.baseUrl = baseUrl;
     _dio.options.headers = {

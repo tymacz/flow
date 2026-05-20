@@ -4,7 +4,8 @@ class Activitycarousselelement extends StatefulWidget {
   final String name;
   final Icon icon;
   final String durating;
-  const Activitycarousselelement({super.key, required this.name, required this.icon, required this.durating});
+  final VoidCallback onPressed;
+  const Activitycarousselelement({super.key, required this.name, required this.icon, required this.durating, required this.onPressed});
 
   @override
   _ActivitycarousselelementState createState() => _ActivitycarousselelementState();
@@ -29,7 +30,7 @@ class _ActivitycarousselelementState extends State<Activitycarousselelement> {
                         ],
                       ),
                     ),
-                    TextButton(style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.white)), onPressed: () {  }, child: Text('Démarrer ( ${widget.durating} )', style: TextStyle(fontSize: 18, color: Colors.black))),
+                    TextButton(style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.white)), onPressed: widget.onPressed , child: Text('Démarrer ( ${widget.durating} )', style: TextStyle(fontSize: 18, color: Colors.black))),
               ],
             ),
           );

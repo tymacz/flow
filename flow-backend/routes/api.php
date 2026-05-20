@@ -27,5 +27,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Humeur
     Route::post('/humeur', [MoodController::class, 'store']); // Enregistrer l'humeur du jour
     Route::get('/humeur/historique', [MoodController::class, 'history']); // Pour le graphe hebdo
+    Route::post('/activities/complete', [ProgressController::class, 'store']);
 
 });

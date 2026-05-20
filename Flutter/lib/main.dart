@@ -4,6 +4,7 @@ import 'package:flow/pages/home_page.dart';
 import 'package:flow/pages/profil_page.dart';
 import 'package:flow/pages/progress_page.dart';
 import 'package:flow/pages/splash_page.dart';
+import 'package:flow/widgets/network_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -44,13 +45,15 @@ class BottomNavBar extends StatelessWidget {
     PersistentTabController _controller = PersistentTabController(initialIndex: 0);
     List<Widget> _buildScreens() {
     return [
-        HomePage(
-          onSettingsPressed: () {
-            _controller.jumpToTab(4); 
-          },
-          onPressedCatalogue: (){
-            _controller.jumpToTab(1);
-          },
+        NetworkWrapper(
+          child: HomePage(
+            onSettingsPressed: () {
+              _controller.jumpToTab(4); 
+            },
+            onPressedCatalogue: (){
+              _controller.jumpToTab(1);
+            },
+          ),
         ),
         const ActivityPage(),
         const ArticlesPage(),

@@ -137,7 +137,40 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       rethrow;
     }
   }
-  // Dans AuthNotifier...
+  Future<void> completeActivity(String title, String category, int duration) async {
+    try {
+      await _apiService.dio.post('/activities/complete', data: {
+        'activity_title': title,
+        'activity_type': category,
+        'duration_minutes': duration,
+      });
+      // Pas besoin de mettre à jour 'state' ici, car l'historique est géré par progressProvider
+    } catch (e) {
+      print("Erreur enregistrement activité: $e");
+      rethrow; // On relance l'erreur pour pouvoir afficher une alerte rouge si besoin
+    }
+  }
+
+  Future<void> saveMood(
+    int score,
+    String mainEmotion,
+    String subEmotion,
+  ) async {
+    try {
+      await _apiService.dio.post(
+        '/humeur',
+        data: {
+          'score': score,
+          'main_emotion': mainEmotion,
+          'sub_emotion': subEmotion,
+        },
+      );
+      // On peut rafraîchir les stats si besoin, mais ce n'est pas bloquant
+    } catch (e) {
+      print("Erreur enregistrement humeur: $e");
+      rethrow;
+    }
+  }
 
   Future<void> toggleFavorite(String activityId) async {
     final currentUser = state.value;

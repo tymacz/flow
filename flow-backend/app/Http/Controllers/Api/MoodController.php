@@ -3,40 +3,45 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\MoodLog;
 use Illuminate\Http\Request;
+use App\Models\Mood;
+use App\Models\MoodLog;
 
 class MoodController extends Controller
 {
-    // Enregistrer l'humeur du jour
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'emotion_id' => 'required|string', // L'ID Mongo de l'émotion
-            'intensite' => 'required|integer|min:1|max:10',
-            'note_personnelle' => 'nullable|string',
-            // Optionnel : snapshot du nom/emoji pour éviter les jointures plus tard
-            'snapshot_nom' => 'nullable|string',
-            'snapshot_emoji' => 'nullable|string',
+        // 1. Vérification : A-t-il déjà voté aujourd'hui ?
+        // On cherche une humeur créée entre 00:00 et 23:59 aujourd'hui
+        $alreadyVoted = Mood::where('user_id', $request->user()->id)
+            ->where('created_at', '>=', now()->startOfDay())
+            ->where('created_at', '<=', now()->endOfDay())
+            ->exists();
+
+        if ($alreadyVoted) {
+            return response()->json(['message' => 'Vous avez déjà noté votre humeur aujourd\'hui.'], 409); // 409 = Conflict
+        }
+
+        // 2. Validation (Code existant)
+        $request->validate([
+            'score' => 'required|integer|min:1|max:5',
+            'main_emotion' => 'required|string',
+            'sub_emotion' => 'nullable|string',
         ]);
 
-        $moodLog = MoodLog::create([
-            'utilisateur_id' => $request->user()->id, // Lien auto avec l'user connecté
-            'emotion_id' => $validated['emotion_id'],
-            'intensite' => $validated['intensite'],
-            'note_personnelle' => $validated['note_personnelle'] ?? '',
-            'date_heure' => now(), // Date actuelle gérée par Carbon
-
-            // Si tu as décidé de stocker les snapshots (recommandé en NoSQL)
-            'emotion_snapshot_nom' => $validated['snapshot_nom'] ?? null,
-            'emotion_snapshot_emoji' => $validated['snapshot_emoji'] ?? null,
+        // 3. Création (Code existant)
+        Mood::create([
+            'user_id' => $request->user()->id,
+            'score' => $request->score,
+            'main_emotion' => $request->main_emotion,
+            'sub_emotion' => $request->sub_emotion,
+            'created_at' => now(),
         ]);
 
-        return response()->json($moodLog, 201);
+        return response()->json(['message' => 'Humeur enregistrée !']);
     }
 
-    // Récupérer l'historique
-    public function history(Request $request)
+        public function history(Request $request)
     {
         $user = $request->user();
 
@@ -49,3 +54,4 @@ class MoodController extends Controller
         return response()->json($logs);
     }
 }
+

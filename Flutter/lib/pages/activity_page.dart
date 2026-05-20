@@ -1,3 +1,5 @@
+import 'package:flow/pages/activity_detail_page.dart';
+import 'package:flow/pages/breathing_menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flow/providers/providers.dart';
@@ -78,6 +80,28 @@ class ActivityPage extends ConsumerWidget {
                           name: activity.titre,
                           icon: _getIconForCategory(activity.categorie),
                           durating: '${activity.dureeMinutes} min',
+                          onPressed: () {
+                            if (activity.categorie.toLowerCase() ==
+                                'respiration') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RespirationMenuPage(),
+                                ),
+                              );
+                            }
+                            // Sinon, on ouvre la page de détail standard
+                            else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ActivityDetailPage(activity: activity),
+                                ),
+                              );
+                            }
+                          },
                         );
                       }).toList(),
                     ),
@@ -108,7 +132,28 @@ class ActivityPage extends ConsumerWidget {
                                 .read(authUserProvider.notifier)
                                 .toggleFavorite(activity.id);
                           },
-                          onPressed: () {},
+                          onPressed: () {
+                            if (activity.categorie.toLowerCase() ==
+                                'respiration') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RespirationMenuPage(),
+                                ),
+                              );
+                            }
+                            // Sinon, on ouvre la page de détail standard
+                            else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ActivityDetailPage(activity: activity),
+                                ),
+                              );
+                            }
+                          },
                         );
                       }),
                       const SizedBox(height: 20),
@@ -140,7 +185,28 @@ class ActivityPage extends ConsumerWidget {
                               .read(authUserProvider.notifier)
                               .toggleFavorite(activity.id);
                         },
-                        onPressed: () {},
+                        onPressed: () {
+                          if (activity.categorie.toLowerCase() ==
+                              'respiration') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const RespirationMenuPage(),
+                              ),
+                            );
+                          }
+                          // Sinon, on ouvre la page de détail standard
+                          else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ActivityDetailPage(activity: activity),
+                              ),
+                            );
+                          }
+                        },
                       );
                     }),
 
