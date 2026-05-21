@@ -28,13 +28,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// Schéma de validation strict avec Zod
-const loginSchema = z.object({
+const signUpSchema = z.object({
   email: z.string().email("Veuillez entrer un email valide."),
-  password: z.string().min(1, "Le mot de passe est requis."),
+    password: z.string().min(1, "Le mot de passe est requis."),
+    prenom: z.string().min(2, "Le prénom est requis."),
+    nom: z.string().min(2, "Le nom est requis."),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,22 +44,27 @@ export default function LoginPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const callbackError = searchParams.get("error");
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
-      password: "",
+        password: "",
+        prenom: "",
+        nom: "",
+        
     },
   });
 
-  async function onSubmit(data: LoginFormValues) {
+  async function onSubmit(data: SignUpFormValues) {
     setIsLoading(true);
     setAuthError(null);
 
     try {
       const result = await signIn("credentials", {
         email: data.email,
-        password: data.password,
+          password: data.password,
+          prenom: data.prenom,
+            nom: data.nom,
         redirect: false,
       });
 
@@ -86,10 +92,10 @@ export default function LoginPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Connexion à Flow Admin
+            Inscription à Flow Admin
           </CardTitle>
           <CardDescription>
-            Saisissez vos accès pour administrer l&apos;application.
+            Saisissez vos informations pour vous inscrire.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -100,7 +106,41 @@ export default function LoginPage() {
           )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                control={form.control}
+                name="nom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nom</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Dupont"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+                          />
+                          <FormField
+                control={form.control}
+                name="prenom"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prénom</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Jean"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -141,14 +181,14 @@ export default function LoginPage() {
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Se connecter
+                S&apos;inscrire
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center border-t border-border pt-4">
-          <Link href="/inscription" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            s&apos;inscrire
+          <Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            se connecter
           </Link>
           <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             Retour à l&apos;accueil public

@@ -1,52 +1,99 @@
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      role?: string;
+      prenom?: string;
+      nom?: string;
+      accessToken?: string; // <-- Ajout du type pour le Token
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    role?: string;
+    prenom?: string;
+    nom?: string;
+    accessToken?: string; // <-- Ajout du type pour le Token
+  }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
 export const authConfig = {
+  pages: {
+    signIn: "/login",
+  },
   providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    CredentialsProvider({
+      name: "Connexion API",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Mot de passe", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
+
+          if (!response.ok) return null;
+
+          const apiData = await response.json();
+          const user = apiData.user || apiData;
+          const token = apiData.token; // <-- Récupération du jeton envoyé par Laravel
+
+          if (user) {
+            return {
+              id: user._id || user.id, 
+              name: `${user.prenom} ${user.nom}`,
+              email: user.email,
+              image: user.avatar_url,
+              role: user.role,
+              prenom: user.prenom,
+              nom: user.nom,
+              accessToken: token, // <-- On stocke le jeton dans NextAuth
+            };
+          }
+
+          return null;
+        } catch (error) {
+          return null;
+        }
+      }
+    })
   ],
   callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
-      },
-    }),
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.prenom = user.prenom;
+        token.nom = user.nom;
+        token.picture = user.image;
+        token.accessToken = user.accessToken; // Passage au JWT interne
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.prenom = token.prenom as string;
+        session.user.nom = token.nom as string;
+        session.user.accessToken = token.accessToken as string; // Rendu dispo pour le front
+      }
+      return session;
+    }
   },
 } satisfies NextAuthConfig;

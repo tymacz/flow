@@ -5,88 +5,55 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { apiClient } from "@/lib/api-client";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-// 1. Définition du schéma de validation avec Zod
 const articleSchema = z.object({
-  titre: z.string().min(5, {
-    message: "Le titre doit contenir au moins 5 caractères.",
-  }),
-  contenu: z.string().min(20, {
-    message: "Le contenu est trop court pour un article.",
-  }),
-  statut: z.enum(["Publié", "Brouillon"]),
+  titre: z.string().min(3, "Le titre est requis."),
+  auteur: z.string().min(2, "L'auteur est requis."),
+  contenu: z.string().min(10, "Le contenu est trop court."),
+  image_url: z.string().optional(),
+  tags: z.string().optional(), // On le gère en string dans le form, on le coupera en array à l'envoi
 });
 
-// Inférer le type TypeScript à partir du schéma Zod
 type ArticleFormValues = z.infer<typeof articleSchema>;
 
 export default function NouvelArticlePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // 2. Initialisation du formulaire
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleSchema),
-    defaultValues: {
-      titre: "",
-      contenu: "",
-      statut: "Brouillon",
-    },
+    defaultValues: { titre: "", auteur: "", contenu: "", image_url: "", tags: "" },
   });
 
-  // 3. Logique de soumission vers ton API
   async function onSubmit(data: ArticleFormValues) {
     setIsLoading(true);
+    setApiError(null);
 
     try {
-      // Remplacer cette URL par l'endpoint réel de ton API
-      /*
-      const response = await fetch("https://api.ton-backend.com/articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${token}` -> À ajouter avec NextAuth
-        },
-        body: JSON.stringify(data),
-      });
+      const payload = {
+        titre: data.titre,
+        auteur: data.auteur,
+        contenu: data.contenu,
+        image_url: data.image_url,
+        // Conversion de "sport, santé" en ["sport", "santé"]
+        tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
+        date_publication: new Date().toISOString(), // Ajout automatique de la date
+      };
 
-      if (!response.ok) throw new Error("Erreur lors de la création");
-      */
-
-      // Simulation d'un délai réseau pour l'exemple
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      console.log("Données prêtes à être envoyées à l'API :", data);
-
-      // Redirection vers la liste des articles après succès
+      await apiClient.post("/articles", payload);
       router.push("/admin/articles");
-      router.refresh(); // Force le rafraîchissement des données de la liste
-      
-    } catch (error) {
-      console.error("Erreur:", error);
-      // Ici, on pourrait déclencher un composant "Toast" pour notifier l'erreur
+      router.refresh(); 
+    } catch (error: any) {
+      setApiError(error.message || "Erreur lors de la création.");
     } finally {
       setIsLoading(false);
     }
@@ -95,89 +62,46 @@ export default function NouvelArticlePage() {
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/articles">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
+        <Button variant="ghost" size="icon" asChild><Link href="/admin/articles"><ArrowLeft className="h-5 w-5" /></Link></Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Nouvel Article</h1>
-          <p className="text-muted-foreground">
-            Rédigez et paramétrez un nouvel article pour l&apos;application.
-          </p>
+          <p className="text-muted-foreground">Rédigez un article pour le blog.</p>
         </div>
       </div>
 
+      {apiError && (
+        <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-4 text-destructive">
+          <AlertCircle className="h-5 w-5" /><p className="text-sm font-medium">{apiError}</p>
+        </div>
+      )}
+
       <div className="rounded-md border bg-background p-6">
-        {/* 4. Le composant Formulaire de shadcn/ui */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
-            <FormField
-              control={form.control}
-              name="titre"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Titre de l&apos;article</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: L'importance de la récupération..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="titre" render={({ field }) => (
+                <FormItem><FormLabel>Titre</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={form.control} name="auteur" render={({ field }) => (
+                <FormItem><FormLabel>Auteur</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="statut"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Statut de publication</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez un statut" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Brouillon">Brouillon</SelectItem>
-                      <SelectItem value="Publié">Publié</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Les brouillons ne sont pas visibles sur l&apos;application mobile.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="image_url" render={({ field }) => (
+              <FormItem><FormLabel>URL de l&apos;image de couverture</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
 
-            <FormField
-              control={form.control}
-              name="contenu"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contenu</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Rédigez votre article ici..."
-                      className="min-h-[300px] resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormField control={form.control} name="tags" render={({ field }) => (
+              <FormItem><FormLabel>Tags (séparés par des virgules)</FormLabel><FormControl><Input placeholder="nutrition, sport, mental..." {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+
+            <FormField control={form.control} name="contenu" render={({ field }) => (
+              <FormItem><FormLabel>Contenu</FormLabel><FormControl><Textarea className="min-h-[300px] resize-y" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
 
             <div className="flex justify-end gap-4">
-              <Button variant="outline" type="button" asChild>
-                <Link href="/admin/articles">Annuler</Link>
-              </Button>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Enregistrer l&apos;article
-              </Button>
+              <Button variant="outline" type="button" asChild><Link href="/admin/articles">Annuler</Link></Button>
+              <Button type="submit" disabled={isLoading}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Enregistrer</Button>
             </div>
           </form>
         </Form>

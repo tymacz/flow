@@ -1,38 +1,57 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { getSession } from "next-auth/react";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith("/api")
+    ? endpoint
+    : `/api${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+    
+  const url = `${BASE_URL}${cleanEndpoint}`;
   
   const headers = new Headers(options.headers);
+  headers.set("Accept", "application/json");
+  
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 
-  // Si tu utilises des tokens JWT stockés, tu pourras les ajouter ici :
-  // headers.set("Authorization", `Bearer ${token}`);
+  // --- RÉCUPÉRATION DU TOKEN SANCTUM ---
+  // On récupère la session actuelle de NextAuth côté client
+  try {
+    const session = await getSession();
+    // Si l'utilisateur est connecté et possède un jeton, on l'ajoute aux Headers
+    if (session?.user?.accessToken) {
+      headers.set("Authorization", `Bearer ${session.user.accessToken}`);
+    }
+  } catch (error) {
+    console.warn("Impossible de récupérer la session NextAuth pour le token.");
+  }
+  // -------------------------------------
 
-  const config: RequestInit = {
-    ...options,
-    headers,
-  };
-
-  const response = await fetch(url, config);
+  const response = await fetch(url, { ...options, headers });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Erreur HTTP: ${response.status}`);
+    throw new Error(errorData.message || `Erreur API: ${response.status}`);
   }
-  if (response.status === 204) {
-    return {} as T;
-  }
+
+  // Si c'est une réponse vide (ex: un DELETE réussi qui renvoie 204 No Content)
+  if (response.status === 204) return {} as T;
 
   return response.json() as Promise<T>;
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, options?: RequestInit) => request<T>(endpoint, { method: "GET", ...options }),
-  post: <T>(endpoint: string, body: any, options?: RequestInit) => request<T>(endpoint, { method: "POST", body: JSON.stringify(body), ...options }),
-  put: <T>(endpoint: string, body: any, options?: RequestInit) => request<T>(endpoint, { method: "PUT", body: JSON.stringify(body), ...options }),
-  patch: <T>(endpoint: string, body: any, options?: RequestInit) => request<T>(endpoint, { method: "PATCH", body: JSON.stringify(body), ...options }),
-  delete: <T>(endpoint: string, options?: RequestInit) => request<T>(endpoint, { method: "DELETE", ...options }),
+  get: <T>(endpoint: string, options?: RequestInit) => 
+    request<T>(endpoint, { method: "GET", ...options }),
+    
+  post: <T>(endpoint: string, body: any, options?: RequestInit) => 
+    request<T>(endpoint, { method: "POST", body: JSON.stringify(body), ...options }),
+    
+  put: <T>(endpoint: string, body: any, options?: RequestInit) => 
+    request<T>(endpoint, { method: "PUT", body: JSON.stringify(body), ...options }),
+    
+  delete: <T>(endpoint: string, options?: RequestInit) => 
+    request<T>(endpoint, { method: "DELETE", ...options }),
 };

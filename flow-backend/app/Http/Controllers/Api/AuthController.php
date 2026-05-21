@@ -29,15 +29,26 @@ class AuthController extends Controller
             'favoris_ids' => [], // On initialise le tableau vide
         ]);
 
-        // Création du token d'accès (Sanctum)
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Identifiants incorrects'], 401);
+        }
+
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Utilisateur créé avec succès',
             'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 201);
+            'token' => $token
+        ]);
+    }
+
+    public function show($id)
+    {
+        // Récupère l'utilisateur ou renvoie une erreur 404 s'il n'existe pas
+        $user = \App\Models\User::findOrFail($id);
+
+        return response()->json($user, 200);
     }
 
     // Connexion
@@ -47,14 +58,17 @@ class AuthController extends Controller
             return response()->json(['message' => 'Identifiants invalides'], 401);
         }
 
-        $user = User::where('email', $request['email'])->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Identifiants incorrects'], 401);
+        }
+
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Connexion réussie',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
+            'user' => $user,
+            'token' => $token
         ]);
     }
 
@@ -78,6 +92,26 @@ class AuthController extends Controller
         'user' => $user
     ]);
 }
+
+    public function update(Request $request, $id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+
+        $data = $request->all();
+
+        // Le front-end envoie les préférences sous forme d'objet/tableau.
+        // On s'assure de les convertir en chaîne JSON avant de les sauvegarder en base.
+        if (isset($data['preferences']) && is_array($data['preferences'])) {
+            $data['preferences'] = json_encode($data['preferences']);
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'message' => 'Profil mis à jour avec succès',
+            'user' => $user
+        ], 200);
+    }
 
     // Récupérer son propre profil (Route /user)
     public function me(Request $request)

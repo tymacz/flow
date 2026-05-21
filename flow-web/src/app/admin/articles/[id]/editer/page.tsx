@@ -5,38 +5,21 @@ import { useRouter, useParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { apiClient } from "@/lib/api-client";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-// On réutilise exactement le même schéma Zod que pour la création
 const articleSchema = z.object({
-  titre: z.string().min(5, {
-    message: "Le titre doit contenir au moins 5 caractères.",
-  }),
-  contenu: z.string().min(20, {
-    message: "Le contenu est trop court pour un article.",
-  }),
-  statut: z.enum(["Publié", "Brouillon"]),
+  titre: z.string().min(3, "Le titre est requis."),
+  auteur: z.string().min(2, "L'auteur est requis."),
+  contenu: z.string().min(10, "Le contenu est trop court."),
+  image_url: z.string().optional(),
+  tags: z.string().optional(),
 });
 
 type ArticleFormValues = z.infer<typeof articleSchema>;
@@ -48,148 +31,79 @@ export default function EditerArticlePage() {
 
   const [isFetching, setIsFetching] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // 1. Initialisation du formulaire vide
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleSchema),
-    defaultValues: {
-      titre: "",
-      contenu: "",
-      statut: "Brouillon",
-    },
+    defaultValues: { titre: "", auteur: "", contenu: "", image_url: "", tags: "" },
   });
 
-  // 2. Simulation de la récupération des données de l'article via l'API
   useEffect(() => {
-    async function fetchArticle() {
+    async function loadArticle() {
       try {
-        // ICI : Remplacer par ton appel API réel, ex:
-        // const res = await fetch(`https://api.ton-backend.com/articles/${articleId}`)
-        // const data = await res.json()
-        
-        // Simulation de données reçues de l'API :
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        const mockArticleData = {
-          titre: "L'importance de la récupération active",
-          contenu: "Voici le contenu complet et détaillé de l'article récupéré depuis l'API de l'application Flow. Il contient toutes les explications nécessaires pour les utilisateurs.",
-          statut: "Publié" as const,
-        };
-
-        // On injecte les données de l'API dans le formulaire
-        form.reset(mockArticleData);
-      } catch (error) {
-        console.error("Erreur de récupération :", error);
+        const data = await apiClient.get<any>(`/articles/${articleId}`);
+        const item = data.data || data;
+        form.reset({
+          titre: item.titre || "",
+          auteur: item.auteur || "",
+          contenu: item.contenu || "",
+          image_url: item.image_url || "",
+          tags: Array.isArray(item.tags) ? item.tags.join(', ') : (item.tags || ""),
+        });
+      } catch (error: any) {
+        setApiError(error.message || "Impossible de charger l'article.");
       } finally {
         setIsFetching(false);
       }
     }
-
-    if (articleId) void fetchArticle();
+    if (articleId) void loadArticle();
   }, [articleId, form]);
 
-  // 3. Soumission des modifications (PUT ou PATCH)
   async function onSubmit(data: ArticleFormValues) {
     setIsSubmitting(true);
+    setApiError(null);
     try {
-      // ICI : Appel API pour mettre à jour l'article, ex:
-      // await fetch(`https://api.ton-backend.com/articles/${articleId}`, { method: 'PUT', ... })
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(`Article ${articleId} mis à jour avec succès :`, data);
-
+      const payload = {
+        titre: data.titre,
+        auteur: data.auteur,
+        contenu: data.contenu,
+        image_url: data.image_url,
+        tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
+      };
+      await apiClient.put(`/articles/${articleId}`, payload);
       router.push("/admin/articles");
       router.refresh();
-    } catch (error) {
-      console.error(error);
-    } {
+    } catch (error: any) {
+      setApiError(error.message || "Erreur de mise à jour.");
+    } finally {
       setIsSubmitting(false);
     }
   }
 
-  if (isFetching) {
-    return (
-      <div className="flex flex-1 items-center justify-center h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-muted-foreground">Chargement de l&apos;article...</span>
-      </div>
-    );
-  }
+  if (isFetching) return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>;
 
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/admin/articles">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Modifier l&apos;article</h1>
-          <p className="text-muted-foreground">ID : {articleId}</p>
-        </div>
+        <Button variant="ghost" size="icon" asChild><Link href="/admin/articles"><ArrowLeft className="h-5 w-5" /></Link></Button>
+        <h1 className="text-3xl font-bold">Modifier l&apos;article</h1>
       </div>
+      
+      {apiError && <div className="rounded-md bg-destructive/10 p-4 text-destructive">{apiError}</div>}
 
       <div className="rounded-md border bg-background p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="titre"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Titre de l&apos;article</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="statut"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Statut de publication</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Brouillon">Brouillon</SelectItem>
-                      <SelectItem value="Publié">Publié</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contenu"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contenu</FormLabel>
-                  <FormControl>
-                    <Textarea className="min-h-[300px] resize-y" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="titre" render={({ field }) => (<FormItem><FormLabel>Titre</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
+              <FormField control={form.control} name="auteur" render={({ field }) => (<FormItem><FormLabel>Auteur</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
+            </div>
+            <FormField control={form.control} name="image_url" render={({ field }) => (<FormItem><FormLabel>URL de l&apos;image</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
+            <FormField control={form.control} name="tags" render={({ field }) => (<FormItem><FormLabel>Tags (séparés par des virgules)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>)} />
+            <FormField control={form.control} name="contenu" render={({ field }) => (<FormItem><FormLabel>Contenu</FormLabel><FormControl><Textarea className="min-h-[300px]" {...field} /></FormControl></FormItem>)} />
             <div className="flex justify-end gap-4">
-              <Button variant="outline" type="button" asChild>
-                <Link href="/admin/articles">Annuler</Link>
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Enregistrer les modifications
-              </Button>
+              <Button variant="outline" type="button" asChild><Link href="/admin/articles">Annuler</Link></Button>
+              <Button type="submit" disabled={isSubmitting}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Modifier</Button>
             </div>
           </form>
         </Form>

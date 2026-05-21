@@ -1,4 +1,5 @@
 import { Topbar } from "@/components/layout/Topbar";
+import SessionProvider from "@/components/providers/SessionProvider";
 
 export default function RootLayout({
   children,
@@ -8,10 +9,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
+        <SessionProvider>
         <Topbar />
         <main className="min-h-screen flex-1">
           {children}
-        </main>
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

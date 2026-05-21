@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, MoreHorizontal, Pencil, Trash2, Loader2, PlayCircle } from "lucide-react";
+import { Plus, Search, MoreHorizontal, Pencil, Trash2, Loader2, PlayCircle, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { apiClient } from "@/lib/api-client";
 import {
   Table,
   TableBody,
@@ -31,18 +32,43 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Fausses données pour les activités
-const initialActivites = [
-  { id: "1", titre: "Séance de Mobilité", categorie: "Récupération", duree: "15 min", statut: "Actif" },
-  { id: "2", titre: "Cardio Haute Intensité", categorie: "HIIT", duree: "30 min", statut: "Actif" },
-  { id: "3", titre: "Test d'effort (En cours de montage)", categorie: "Cardio", duree: "45 min", statut: "Inactif" },
-];
+interface Activity {
+  _id: string;
+  titre?: string;
+  title?: string;
+  categorie?: string;
+  category?: string;
+  duree_minutes?: number;
+  duration?: number;
+  statut?: string;
+  status?: string;
+}
 
 export default function ActivitesCrudPage() {
-  const [activites, setActivites] = useState(initialActivites);
+  const [activites, setActivites] = useState<Activity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activiteToDelete, setActiviteToDelete] = useState<{ id: string; titre: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // CHARGEMENT DEPUIS LARAVEL
+  useEffect(() => {
+    async function fetchActivites() {
+      try {
+        // Attention au nom de ta route Laravel (activities ou activites)
+        const response = await apiClient.get<any>("/activities");
+        const items = response.data || response;
+        setActivites(items);
+      } catch (error: any) {
+        setApiError(error.message || "Impossible de charger les activités.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    void fetchActivites();
+  }, []);
 
   const openDeleteModal = (id: string, titre: string) => {
     setActiviteToDelete({ id, titre });
@@ -53,9 +79,9 @@ export default function ActivitesCrudPage() {
     if (!activiteToDelete) return;
     setIsDeleting(true);
     try {
-      // Simulation d'appel API
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setActivites(activites.filter((act) => act.id !== activiteToDelete.id));
+      // APPEL RÉEL DE SUPPRESSION
+      await apiClient.delete(`/activities/${activiteToDelete.id}`);
+      setActivites(activites.filter((act) => act._id !== activiteToDelete.id));
       setIsDeleteDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -80,12 +106,12 @@ export default function ActivitesCrudPage() {
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input type="search" placeholder="Rechercher un exercice..." className="pl-8 bg-background" />
+      {apiError && (
+        <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-4 text-destructive">
+          <AlertCircle className="h-5 w-5" />
+          <p className="text-sm font-medium">{apiError}</p>
         </div>
-      </div>
+      )}
 
       <div className="rounded-md border bg-background">
         <Table>
@@ -94,56 +120,71 @@ export default function ActivitesCrudPage() {
               <TableHead>Titre</TableHead>
               <TableHead>Catégorie</TableHead>
               <TableHead>Durée</TableHead>
-              <TableHead>Statut</TableHead>
               <TableHead className="w-[80px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {activites.map((activite) => (
-              <TableRow key={activite.id}>
-                <TableCell className="font-medium flex items-center gap-3">
-                  <PlayCircle className="h-8 w-8 text-muted-foreground/50" />
-                  {activite.titre}
-                </TableCell>
-                <TableCell>
-                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                    {activite.categorie}
-                  </span>
-                </TableCell>
-                <TableCell className="text-muted-foreground font-medium">{activite.duree}</TableCell>
-                <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                    activite.statut === "Actif" ? "bg-green-100 text-green-800" : "bg-muted text-muted-foreground"
-                  }`}>
-                    {activite.statut}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href={`/admin/activites/${activite.id}/editer`} className="flex items-center gap-2">
-                          <Pencil className="h-4 w-4" />
-                          Modifier
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => openDeleteModal(activite.id, activite.titre)}
-                        className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive flex items-center gap-2"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-32 text-center">
+                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : activites.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                  Aucune activité trouvée.
+                </TableCell>
+              </TableRow>
+            ) : (
+              activites.map((activite) => {
+                const displayTitle = activite.titre ?? activite.title ?? "Sans titre";
+                const displayCategory = activite.categorie ?? activite.category ?? "Non classé";
+                const displayDuration = activite.duree_minutes ?? activite.duration ?? 0;
+                const realId = activite._id || activite.id;
+
+                return (
+                  <TableRow key={realId}>
+                    <TableCell className="font-medium flex items-center gap-3">
+                      <PlayCircle className="h-8 w-8 text-muted-foreground/50" />
+                      {displayTitle}
+                    </TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                        {displayCategory}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground font-medium">
+                      {displayDuration} min
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href={`/admin/activites/${realId}/editer`} className="flex items-center gap-2">
+                              <Pencil className="h-4 w-4" />
+                              Modifier
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => openDeleteModal(realId, displayTitle)}
+                            className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive flex items-center gap-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>
