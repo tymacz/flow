@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface MoodEntry {
   id: number;
-  mood_value: number; // ex: 1 à 5
+  mood_value: number;
   note: string;
   created_at: string;
 }
@@ -30,14 +30,18 @@ export default function ProgressionPage() {
     async function fetchUserStats() {
       try {
         setIsLoading(true);
-        // On récupère les deux flux de données en parallèle
         const [moodRes, activityRes] = await Promise.all([
-          apiClient.get<MoodEntry[]>("/humeur/historique"),
-          apiClient.get<ActivityEntry[]>("/progress"),
+          apiClient.get<any>("/humeur/historique"),
+          apiClient.get<any>("/progress"),
         ]);
 
-        setMoodHistory(moodRes || []);
-        setActivityHistory(activityRes || []);
+        // SÉCURITÉ : On vérifie si Laravel a encapsulé le tableau dans "data"
+        // Si c'est un tableau on le prend direct, sinon on cherche .data, sinon on met un tableau vide []
+        const moodArray = Array.isArray(moodRes) ? moodRes : (moodRes?.data || []);
+        const activityArray = Array.isArray(activityRes) ? activityRes : (activityRes?.data || []);
+
+        setMoodHistory(moodArray);
+        setActivityHistory(activityArray);
       } catch (err: any) {
         setError("Impossible de récupérer vos données de progression.");
       } finally {
@@ -59,7 +63,7 @@ export default function ProgressionPage() {
     <div className="space-y-8 pb-12 pt-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Mon Espace Progression</h1>
-        <p className="text-muted-foreground">Retrouvez vos activités passées et l&aposévolution de votre humeur.</p>
+        <p className="text-muted-foreground">Retrouvez vos activités passées et l&apos;évolution de votre humeur.</p>
       </div>
 
       {error && (
@@ -87,7 +91,7 @@ export default function ProgressionPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {moodHistory.length > 0 ? moodHistory[0].mood_value : "-"} / 5
+              {moodHistory.length > 0 ? moodHistory[0]?.mood_value : "-"} / 5
             </div>
           </CardContent>
         </Card>
@@ -98,6 +102,7 @@ export default function ProgressionPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
+              {/* Le reduce fonctionnera toujours maintenant car on est sûr à 100% que c'est un tableau */}
               {activityHistory.reduce((acc, curr) => acc + (curr.duree || 0), 0)} min
             </div>
           </CardContent>
@@ -115,24 +120,28 @@ export default function ProgressionPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Activité</TableHead>
-                  <TableHead>Durée</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {activityHistory.slice(0, 5).map((act) => (
-                  <TableRow key={act.id}>
-                    <TableCell className="font-medium">{act.titre}</TableCell>
-                    <TableCell>{act.duree} min</TableCell>
-                    <TableCell>{new Date(act.created_at).toLocaleDateString("fr-FR")}</TableCell>
+            {activityHistory.length === 0 ? (
+               <p className="text-sm text-muted-foreground text-center py-4">Aucune activité enregistrée.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Activité</TableHead>
+                    <TableHead>Durée</TableHead>
+                    <TableHead>Date</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {activityHistory.slice(0, 5).map((act, index) => (
+                    <TableRow key={act.id || index}>
+                      <TableCell className="font-medium">{act.titre || "Séance sans titre"}</TableCell>
+                      <TableCell>{act.duree || 0} min</TableCell>
+                      <TableCell>{act.created_at ? new Date(act.created_at).toLocaleDateString("fr-FR") : "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
@@ -145,28 +154,32 @@ export default function ProgressionPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Humeur</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {moodHistory.slice(0, 5).map((mood) => (
-                  <TableRow key={mood.id}>
-                    <TableCell>
-                        <span className="text-lg">
-                            {mood.mood_value >= 4 ? "😊" : mood.mood_value >= 3 ? "😐" : "😞"}
-                        </span>
-                    </TableCell>
-                    <TableCell>{mood.note || "Pas de commentaire"}</TableCell>
-                    <TableCell>{new Date(mood.created_at).toLocaleDateString("fr-FR")}</TableCell>
+            {moodHistory.length === 0 ? (
+               <p className="text-sm text-muted-foreground text-center py-4">Aucune humeur enregistrée.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Humeur</TableHead>
+                    <TableHead>Note</TableHead>
+                    <TableHead>Date</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {moodHistory.slice(0, 5).map((mood, index) => (
+                    <TableRow key={mood.id || index}>
+                      <TableCell>
+                          <span className="text-lg">
+                              {mood.mood_value >= 4 ? "😊" : mood.mood_value >= 3 ? "😐" : "😞"}
+                          </span>
+                      </TableCell>
+                      <TableCell>{mood.note || "Pas de commentaire"}</TableCell>
+                      <TableCell>{mood.created_at ? new Date(mood.created_at).toLocaleDateString("fr-FR") : "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>

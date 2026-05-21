@@ -65,7 +65,7 @@ export default function LoginPage() {
       if (result?.error) {
         setAuthError("Identifiants incorrects ou privilèges insuffisants.");
       } else {
-        router.push("/admin");
+        router.push("/");
         router.refresh();
       }
     } catch (error) {

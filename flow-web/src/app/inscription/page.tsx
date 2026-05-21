@@ -1,159 +1,137 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, AlertCircle, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { apiClient } from "@/lib/api-client";
 
-const signUpSchema = z.object({
-  email: z.string().email("Veuillez entrer un email valide."),
-    password: z.string().min(1, "Le mot de passe est requis."),
-    prenom: z.string().min(2, "Le prénom est requis."),
-    nom: z.string().min(2, "Le nom est requis."),
+const registerSchema = z.object({
+  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères."),
+  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
+  email: z.string().email("Adresse email invalide."),
+  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères."),
 });
 
-type SignUpFormValues = z.infer<typeof signUpSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
+export default function InscriptionPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
-  const callbackError = searchParams.get("error");
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const form = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
+      prenom: "",
+      nom: "",
       email: "",
-        password: "",
-        prenom: "",
-        nom: "",
-        
+      password: "",
     },
   });
 
-  async function onSubmit(data: SignUpFormValues) {
+  async function onSubmit(data: RegisterFormValues) {
     setIsLoading(true);
-    setAuthError(null);
+    setApiError(null);
 
     try {
-      const result = await signIn("credentials", {
+      // 1. Envoi de la requête d'inscription à l'API Laravel
+      await apiClient.post("/register", {
+        prenom: data.prenom,
+        nom: data.nom,
         email: data.email,
-          password: data.password,
-          prenom: data.prenom,
-            nom: data.nom,
+        password: data.password,
+        role: "USER", // Rôle par défaut pour les nouveaux inscrits
+      });
+
+      // 2. Connexion automatique immédiate via NextAuth après succès
+      const result = await signIn("credentials", {
         redirect: false,
+        email: data.email,
+        password: data.password,
       });
 
       if (result?.error) {
-        setAuthError("Identifiants incorrects ou privilèges insuffisants.");
+        // Si la connexion auto échoue, on redirige manuellement vers la page de login classique
+        router.push("/login");
       } else {
-        router.push("/admin");
+        // Redirection directe vers la page d'accueil publique
+        router.push("/");
         router.refresh();
       }
-    } catch (error) {
-        console.error("Erreur lors de la tentative de connexion :", error);
-      setAuthError("Une erreur réseau est survenue lors de la communication avec l'API.");
+    } catch (error: any) {
+      setApiError(error.message ?? "Une erreur est survenue lors de l'inscription.");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md shadow-md">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-2">
-            <div className="rounded-full bg-primary/10 p-3 text-primary">
-              <Lock className="h-6 w-6" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Inscription à Flow Admin
-          </CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Créer un compte</CardTitle>
           <CardDescription>
-            Saisissez vos informations pour vous inscrire.
+            Inscrivez-vous dès maintenant pour suivre votre progression sur Flow.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {(authError ?? callbackError) && (
-            <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">
-              {authError ?? "Une authentification valide est requise pour accéder à cette zone."}
-            </div>
-          )}
+        
+        {apiError && (
+          <div className="mx-6 p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <p className="text-sm font-medium">{apiError}</p>
+          </div>
+        )}
 
-          <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardContent className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
-                control={form.control}
-                name="nom"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Dupont"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-                          />
-                          <FormField
-                control={form.control}
-                name="prenom"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Prénom</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Jean"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  control={form.control}
+                  name="prenom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prénom</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Alex" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="nom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nom</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Dupont" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Adresse email</FormLabel>
+                    <FormLabel>Adresse Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="admin@flow.com"
-                        autoComplete="email"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="alex@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,33 +145,32 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Mot de passe</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        autoComplete="current-password"
-                        {...field} 
-                      />
+                      <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            </CardContent>
+            
+            <CardFooter className="flex flex-col space-y-4">
+              <Button type="submit" className="w-full gap-2" disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <UserPlus className="h-4 w-4" />
+                )}
                 S&apos;inscrire
               </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex justify-center border-t border-border pt-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            se connecter
-          </Link>
-          <Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-            Retour à l&apos;accueil public
-          </Link>
-        </CardFooter>
+              <div className="text-sm text-center text-muted-foreground">
+                Déjà un compte ?{" "}
+                <Link href="/login" className="text-primary hover:underline font-medium">
+                  Se connecter
+                </Link>
+              </div>
+            </CardFooter>
+          </form>
+        </Form>
       </Card>
     </div>
   );
