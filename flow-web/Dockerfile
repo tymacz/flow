@@ -13,7 +13,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
 # URL relative : le navigateur appellera http://TON_IP:3000/api
-ENV NEXT_PUBLIC_API_URL=/api
+ENV NEXT_PUBLIC_API_URL=""
 
 RUN npm run build
 
