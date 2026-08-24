@@ -30,6 +30,8 @@ services:
       dockerfile: Dockerfile
     container_name: cesizen_backend
     restart: always
+    ports:
+      - "8000:8000"
     env_file:
       - ./flow-backend/.env
     environment:
