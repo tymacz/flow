@@ -23,7 +23,7 @@ services:
     networks:
       - cesizen_net
 
-  # Backend API Laravel
+# Backend API Laravel
   backend:
     build:
       context: ./flow-backend
@@ -33,9 +33,13 @@ services:
     env_file:
       - ./flow-backend/.env
     environment:
+      - DB_HOST=db
+      - DB_PORT=5432
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
-      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_URI=mongodb://mongo:27017/flow_db
+      - MONGO_DSN=mongodb://mongo:27017/flow_db
+      - DB_DSN=mongodb://mongo:27017/flow_db
     depends_on:
       - db
       - mongo
