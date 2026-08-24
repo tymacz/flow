@@ -8,13 +8,15 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   async rewrites() {
-    return [
-      {
-        // Tout appel vers /api/... côté client sera redirigé vers le backend Docker
-        source: '/api/:path*',
-        destination: 'http://backend:8000/api/:path*',
-      },
-    ];
+    return {
+      // fallback s'exécute uniquement si Next.js ne trouve pas la route en interne
+      fallback: [
+        {
+          source: '/api/:path*',
+          destination: 'http://backend:8000/api/:path*',
+        },
+      ],
+    };
   },
 };
 
