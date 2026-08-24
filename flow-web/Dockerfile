@@ -12,10 +12,12 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-# URL relative : le navigateur appellera http://TON_IP:3000/api
-ENV NEXT_PUBLIC_API_URL=""
-ENV NEXTAUTH_SECRET="build_secret_placeholder_for_docker_compilation"
+ENV NEXT_PUBLIC_API_URL=/api
+
+# Variables requises pour la validation lors du npm run build
+ENV NEXTAUTH_SECRET="build_secret_placeholder_for_docker"
 ENV NEXTAUTH_URL="http://localhost:3000"
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
 RUN npm run build
 
