@@ -15,15 +15,13 @@ jobs:
 
       - name: Préparation du fichier .env backend
         run: |
-          if [ ! -f flow-backend/.env ]; then
-            cp flow-backend/.env.example flow-backend/.env
-          fi
-          # Forcer le nom de l'hôte MongoDB vers le conteneur Docker "mongo"
-          sed -i 's/127.0.0.1:27017/mongo:27017/g' flow-backend/.env || true
-          sed -i 's/localhost:27017/mongo:27017/g' flow-backend/.env || true
-          echo "" >> flow-backend/.env
-          echo "MONGODB_URI=mongodb://mongo:27017/flow_db" >> flow-backend/.env
-          echo "MONGODB_HOST=mongo" >> flow-backend/.env
+          # Écrasement forcé du .env pour nettoyer les résidus des anciens builds
+          cp -f flow-backend/.env.example flow-backend/.env
+          
+          # Remplace toutes les occurrences locales par le nom des conteneurs
+          sed -i 's/127.0.0.1/mongo/g' flow-backend/.env
+          sed -i 's/localhost/mongo/g' flow-backend/.env
+          sed -i 's/DB_HOST=mongo/DB_HOST=db/g' flow-backend/.env
 
       - name: Déploiement des conteneurs Docker
         run: |
@@ -36,5 +34,6 @@ jobs:
       - name: Initialisation Laravel (Clé, Cache & Migrations)
         run: |
           docker exec cesizen_backend php artisan config:clear
+          docker exec cesizen_backend php artisan cache:clear
           docker exec cesizen_backend php artisan key:generate --force
           docker exec cesizen_backend php artisan migrate --force
