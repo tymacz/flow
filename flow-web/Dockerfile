@@ -1,4 +1,3 @@
-
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -9,11 +8,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
 ENV NEXT_PUBLIC_API_URL=http://backend:8000/api
+ENV NEXTAUTH_SECRET=build_secret_placeholder_12345
+ENV NEXTAUTH_URL=http://localhost:3000
 
 RUN npm run build
+
 
 FROM node:20-alpine AS runner
 WORKDIR /app
