@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Lock } from "lucide-react";
 import Link from "next/link";
+import {Suspense} from 'react';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,6 +78,7 @@ export default function LoginPage() {
   }
 
   return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Chargement...</div>}>
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-12 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md shadow-md">
         <CardHeader className="space-y-1 text-center">
@@ -156,5 +158,6 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </div>
+      </Suspense>
   );
 }
