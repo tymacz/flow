@@ -40,10 +40,10 @@ jobs:
           docker compose down
           docker compose up -d --build --remove-orphans
 
-      - name: Attente du démarrage des bases (PostgreSQL & MongoDB)
+      - name: Attente du démarrage des bases
         run: sleep 10
 
-      - name: Initialisation Laravel (Clé, Cache & Migrations)
+      - name: Initialisation Laravel
         run: |
           docker exec cesizen_backend php artisan config:clear
           docker exec cesizen_backend php artisan cache:clear
