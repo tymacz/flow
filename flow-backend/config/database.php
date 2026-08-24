@@ -113,15 +113,13 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
         'mongodb' => [
-        'driver'   => 'mongodb',
-        'host'     => env('DB_HOST', '127.0.0.1'),
-        'port'     => env('DB_PORT', 27017),
-        'database' => env('DB_DATABASE', 'flow_db'),
-        'username' => env('DB_USERNAME', ''),
-        'password' => env('DB_PASSWORD', ''),
-        'options'  => [
-            'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'), // Requis si auth activé sur Mongo plus tard
-        ],
+            'driver'   => 'mongodb',
+            'dsn'      => env('MONGODB_URI'),
+            'host'     => env('MONGODB_HOST', 'mongo'),
+            'port'     => (int) env('MONGODB_PORT', 27017),
+            'database' => env('MONGODB_DATABASE', 'flow_db'),
+            'username' => env('MONGODB_USERNAME', ''),
+            'password' => env('MONGODB_PASSWORD', ''),
     ],
 
     ],
