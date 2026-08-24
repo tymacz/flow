@@ -13,15 +13,27 @@ jobs:
       - name: Récupération des sources
         uses: actions/checkout@v4
 
-      - name: Préparation du fichier .env backend
+      - name: Génération d'un fichier .env backend propre
         run: |
-          # Écrasement forcé du .env pour nettoyer les résidus des anciens builds
-          cp -f flow-backend/.env.example flow-backend/.env
-          
-          # Remplace toutes les occurrences locales par le nom des conteneurs
-          sed -i 's/127.0.0.1/mongo/g' flow-backend/.env
-          sed -i 's/localhost/mongo/g' flow-backend/.env
-          sed -i 's/DB_HOST=mongo/DB_HOST=db/g' flow-backend/.env
+          cat << 'EOF' > flow-backend/.env
+          APP_NAME=Flow
+          APP_ENV=production
+          APP_KEY=
+          APP_DEBUG=false
+          APP_URL=http://localhost:8000
+
+          DB_CONNECTION=pgsql
+          DB_HOST=db
+          DB_PORT=5432
+          DB_DATABASE=flow_db
+          DB_USERNAME=flow_user
+          DB_PASSWORD=secret_password
+
+          MONGODB_HOST=mongo
+          MONGODB_PORT=27017
+          MONGODB_DATABASE=flow_db
+          MONGODB_URI=mongodb://mongo:27017/flow_db
+          EOF
 
       - name: Déploiement des conteneurs Docker
         run: |
