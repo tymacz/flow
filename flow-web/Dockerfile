@@ -1,23 +1,23 @@
+# Stage 1: Installation des dépendances
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps || npm install
 
+# Stage 2: Build de l'application Next.js
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-ENV NEXT_PUBLIC_API_URL=http://backend:8000/api
-ENV NEXTAUTH_SECRET=build_secret_placeholder_12345
-ENV NEXTAUTH_URL=http://localhost:3000
+# URL relative : le navigateur appellera http://TON_IP:3000/api
+ENV NEXT_PUBLIC_API_URL=/api
 
 RUN npm run build
 
-
+# Stage 3: Runner
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
