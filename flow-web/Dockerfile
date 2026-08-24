@@ -14,6 +14,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
 # URL relative : le navigateur appellera http://TON_IP:3000/api
 ENV NEXT_PUBLIC_API_URL=""
+ENV NEXTAUTH_SECRET="build_secret_placeholder_for_docker_compilation"
+ENV NEXTAUTH_URL="http://localhost:3000"
 
 RUN npm run build
 
