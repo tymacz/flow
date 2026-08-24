@@ -13,11 +13,18 @@ jobs:
       - name: Récupération des sources
         uses: actions/checkout@v4
 
+      - name: Préparation du fichier .env backend
+        run: |
+          if [ ! -f flow-backend/.env ]; then
+            cp flow-backend/.env.example flow-backend/.env
+          fi
+
       - name: Déploiement des conteneurs Docker
         run: |
           docker compose down
           docker compose up -d --build --remove-orphans
 
-      - name: Exécution des migrations de base de données
+      - name: Initialisation Laravel (Clé & Migrations)
         run: |
+          docker exec cesizen_backend php artisan key:generate --force
           docker exec cesizen_backend php artisan migrate --force
