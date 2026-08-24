@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Loader2, AlertCircle, UserPlus } from "lucide-react";
 import Link from "next/link";
-
+import { Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,6 +76,7 @@ export default function InscriptionPage() {
   }
 
   return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Chargement...</div>}>
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
@@ -173,5 +174,6 @@ export default function InscriptionPage() {
         </Form>
       </Card>
     </div>
+    </Suspense>
   );
 }
