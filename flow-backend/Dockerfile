@@ -18,5 +18,5 @@ COPY --from=vendor /app /var/www/html
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 9000
+EXPOSE 8000
 CMD ["php-fpm"]
