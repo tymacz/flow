@@ -59,8 +59,10 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://192.168.1.3:8000/api
+      - INTERNAL_API_URL=http://backend:8000/api
       - AUTH_TRUST_HOST=true
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://192.168.1.3:3000
+      - AUTH_SECRET=GC5aZ96CoM1ptZ1g7K0K9dLu70Nd0vzVoXBaz3zjdjg=
       - NEXTAUTH_SECRET=votre_secret_tres_securise_changement_prod
     depends_on:
       - backend
