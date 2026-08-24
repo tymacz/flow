@@ -48,4 +48,4 @@ jobs:
           docker exec cesizen_backend php artisan config:clear
           docker exec cesizen_backend php artisan cache:clear
           docker exec cesizen_backend php artisan key:generate --force
-          docker exec cesizen_backend php artisan migrate --force
+          docker exec cesizen_backend php artisan migrate --database=pgsql --force
