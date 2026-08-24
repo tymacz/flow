@@ -18,11 +18,17 @@ jobs:
           if [ ! -f flow-backend/.env ]; then
             cp flow-backend/.env.example flow-backend/.env
           fi
+          # S'assure que l'hôte MongoDB pointe vers le conteneur Docker
+          sed -i 's/127.0.0.1:27017/mongo:27017/g' flow-backend/.env || true
+          sed -i 's/MONGODB_HOST=127.0.0.1/MONGODB_HOST=mongo/g' flow-backend/.env || true
 
       - name: Déploiement des conteneurs Docker
         run: |
           docker compose down
           docker compose up -d --build --remove-orphans
+
+      - name: Attente du démarrage des bases de données
+        run: sleep 10
 
       - name: Initialisation Laravel (Clé & Migrations)
         run: |

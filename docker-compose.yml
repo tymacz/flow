@@ -1,4 +1,5 @@
 services:
+  # Base de données PostgreSQL
   db:
     image: postgres:16-alpine
     container_name: cesizen_db
@@ -12,6 +13,17 @@ services:
     networks:
       - cesizen_net
 
+  # Base de données MongoDB
+  mongo:
+    image: mongo:7.0
+    container_name: cesizen_mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - cesizen_net
+
+  # Backend API Laravel
   backend:
     build:
       context: ./flow-backend
@@ -20,11 +32,17 @@ services:
     restart: always
     env_file:
       - ./flow-backend/.env
+    environment:
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - MONGODB_URI=mongodb://mongo:27017
     depends_on:
       - db
+      - mongo
     networks:
       - cesizen_net
 
+  # Frontend Web Next.js
   frontend:
     build:
       context: ./flow-web
@@ -46,3 +64,4 @@ networks:
 
 volumes:
   db_data:
+  mongo_data:
