@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cesizen_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-flow_db}
+      POSTGRES_USER: ${DB_USERNAME:-flow_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret_password}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - cesizen_net
+
+  backend:
+    build:
+      context: ./flow-backend
+      dockerfile: Dockerfile
+    container_name: cesizen_backend
+    restart: always
+    env_file:
+      - ./flow-backend/.env
+    depends_on:
+      - db
+    networks:
+      - cesizen_net
+
+  frontend:
+    build:
+      context: ./flow-web
+      dockerfile: Dockerfile
+    container_name: cesizen_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000/api
+    depends_on:
+      - backend
+    networks:
+      - cesizen_net
+
+networks:
+  cesizen_net:
+    driver: bridge
+
+volumes:
+  db_data:
