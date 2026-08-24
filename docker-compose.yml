@@ -49,7 +49,6 @@ services:
     networks:
       - cesizen_net
 
-  # Frontend Web Next.js
   frontend:
     build:
       context: ./flow-web
@@ -60,6 +59,9 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000/api
+      - AUTH_TRUST_HOST=true
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=votre_secret_tres_securise_changement_prod
     depends_on:
       - backend
     networks:
