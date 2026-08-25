@@ -62,6 +62,7 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - AUTH_TRUST_HOST=true
       - NODE_ENV=production
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=vrai_secret_tres_securise_ici
