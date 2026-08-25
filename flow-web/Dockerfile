@@ -25,6 +25,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV AUTH_TRUST_HOST=true
 
 # Variables indispensables au RUNTIME pour NextAuth et T3 Env
 ENV NEXTAUTH_URL="http://localhost:3000"
