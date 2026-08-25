@@ -30,11 +30,11 @@ class GLPIService
             'App-Token' => $this->appToken,
             'Authorization' => 'user_token ' . $this->userToken,
         ])->get("{$this->baseUrl}/initSession");
-
+    
         if ($response->successful()) {
             return $response->json('session_token');
         }
-
+    
         Log::error('GLPI initSession error', ['body' => $response->body()]);
         return null;
     }
