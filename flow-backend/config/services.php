@@ -22,6 +22,12 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'glpi' => [
+    'url' => env('GLPI_URL', 'http://glpi/apirest.php'),
+    'app_token' => env('GLPI_APP_TOKEN'),
+    'user_token' => env('GLPI_USER_TOKEN'),
+],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
