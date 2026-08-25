@@ -5,7 +5,8 @@ import { useState } from 'react';
 export default function TicketForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [urgency, setUrgency] = useState('3'); // 3 = Moyenne par défaut dans GLPI
+  const [urgency, setUrgency] = useState('3');
+  const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -14,17 +15,22 @@ export default function TicketForm() {
     setLoading(true);
     setStatus(null);
 
+    // Construction du FormData
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('urgency', urgency);
+
+    if (files) {
+      Array.from(files).forEach((file) => {
+        formData.append('attachments[]', file);
+      });
+    }
+
     try {
       const response = await fetch('/api/tickets', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          urgency: parseInt(urgency, 10),
-        }),
+        body: formData, // Pas de Content-Type header manuel, le navigateur le gère avec le boundary
       });
 
       const data = await response.json();
@@ -40,6 +46,7 @@ export default function TicketForm() {
       setTitle('');
       setDescription('');
       setUrgency('3');
+      setFiles(null);
     } catch (err: any) {
       setStatus({
         type: 'error',
@@ -109,8 +116,20 @@ export default function TicketForm() {
             rows={5}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Décrivez précisément votre problème ou votre demande..."
+            placeholder="Décrivez précisément votre problème..."
             className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            Pièces jointes
+          </label>
+          <input
+            type="file"
+            multiple
+            onChange={(e) => setFiles(e.target.files)}
+            className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-slate-800 dark:file:text-indigo-400"
           />
         </div>
 
