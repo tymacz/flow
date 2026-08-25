@@ -11,8 +11,11 @@ export const authOptions: AuthOptions = {
       },
   async authorize(credentials) {
     if (!credentials?.email || !credentials?.password) return null;
-  
-    const res = await fetch(`${process.env.LARAVEL_API_URL}/api/login`, {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://cesizen_backend:8000/api";
+
+    // S'assurer qu'il n'y a pas de double slash à l'assemblage
+    const loginUrl = apiBase.endsWith("/") ? `${apiBase}login` : `${apiBase}/login`;
+    const res = await fetch(loginUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
