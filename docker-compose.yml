@@ -69,7 +69,7 @@ services:
     networks:
       - cesizen_net
 
-      glpi_db:
+  glpi_db:
     image: mariadb:10.11
     container_name: cesizen_glpi_db
     restart: always
