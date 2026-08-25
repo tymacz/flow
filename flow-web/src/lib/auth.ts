@@ -9,34 +9,41 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
-  async authorize(credentials) {
-    if (!credentials?.email || !credentials?.password) return null;
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://cesizen_backend:8000/api";
-
-    // S'assurer qu'il n'y a pas de double slash à l'assemblage
-    const loginUrl = apiBase.endsWith("/") ? `${apiBase}login` : `${apiBase}/login`;
-    const res = await fetch(loginUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json', // Indispensable pour que Laravel renvoie du JSON et non du HTML
-      },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
-    });
-  
-    // Si Laravel renvoie un code d'erreur (401, 422, 500)
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => null);
-      console.error('Erreur API Laravel :', res.status, errorData);
-      return null; // Déclenche CredentialsSignin de façon propre sans crasher la route
+    async authorize(credentials) {
+      if (!credentials?.email || !credentials?.password) return null;
+    
+      // L'URL serveur pointe vers le service Docker 'backend' (port 8000)
+      const apiBase = process.env.INTERNAL_API_URL || "http://backend:8000/api";
+      const loginUrl = `${apiBase.replace(/\/$/, "")}/login`;
+    
+      const res = await fetch(loginUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+      });
+    
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        console.error("Erreur API Laravel :", res.status, errorData);
+        return null;
+      }
+    
+      const data = await res.json();
+    
+      // Auth.js exige un objet avec un champ 'id' (string) à la racine
+      return {
+        id: String(data.user._id || data.user.id),
+        name: data.user.name,
+        email: data.user.email,
+        accessToken: data.access_token,
+      };
     }
-  
-    const user = await res.json();
-    return user || null;
-  }
     })
   ],
   session: { strategy: "jwt" },
