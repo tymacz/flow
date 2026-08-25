@@ -84,7 +84,7 @@ services:
       - cesizen_net
 
   glpi:
-    image: etherealsolutions/glpi:latest
+    image: elestio/glpi:latest
     container_name: cesizen_glpi
     restart: always
     ports:
