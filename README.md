@@ -1,4 +1,4 @@
-# 🌊 Flow - Votre espace de sérénité.
+# 🌊 Flow - Votre espace de sérénité
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Status](https://img.shields.io/badge/status-In_Development-orange.svg)
