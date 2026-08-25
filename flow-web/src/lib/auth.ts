@@ -10,44 +10,29 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" }
       },
   async authorize(credentials) {
-    console.log("1. Credentials transmis à authorize :", credentials);
+    if (!credentials?.email || !credentials?.password) return null;
   
-    try {
-      const res = await fetch("http://cesizen_backend:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({
-          email: credentials?.email,
-          password: credentials?.password,
-        }),
-      });
+    const res = await fetch(`${process.env.LARAVEL_API_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json', // Indispensable pour que Laravel renvoie du JSON et non du HTML
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
+    });
   
-      const data = await res.json();
-      console.log("2. Statut HTTP Laravel :", res.status);
-      console.log("3. Contenu réponse Laravel :", data);
-  
-      if (!res.ok || !data) {
-        console.log("Échec : Laravel a renvoyé une erreur ou un payload vide");
-        return null;
-      }
-  
-      // Récupération de l'utilisateur (s'il est imbriqué dans data.user ou directement dans data)
-      const user = data.user || data;
-  
-      // Exigence stricte Auth.js v5 : le champ 'id' doit exister et être une string
-      return {
-        id: String(user._id || user.id || "1"),
-        name: user.name,
-        email: user.email,
-        token: data.access_token || data.token,
-      };
-    } catch (error) {
-      console.error("Erreur réseau lors de l'appel à Laravel :", error);
-      return null;
+    // Si Laravel renvoie un code d'erreur (401, 422, 500)
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => null);
+      console.error('Erreur API Laravel :', res.status, errorData);
+      return null; // Déclenche CredentialsSignin de façon propre sans crasher la route
     }
+  
+    const user = await res.json();
+    return user || null;
   }
     })
   ],
