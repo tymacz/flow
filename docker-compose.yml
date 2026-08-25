@@ -62,8 +62,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=
-      - AUTH_TRUST_HOST=true
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=vrai_secret_tres_securise_ici
+      - NEXT_PUBLIC_API_URL=http://backend:8000/api
     depends_on:
       - backend
     networks:
