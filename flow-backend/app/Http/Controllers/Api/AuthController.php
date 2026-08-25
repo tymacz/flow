@@ -43,6 +43,7 @@ class AuthController extends Controller
     // Connexion
     public function login(Request $request)
     {
+        Log::info('Login Request Data:', $request->all());
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json(['message' => 'Identifiants invalides'], 401);
         }
