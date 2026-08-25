@@ -84,7 +84,7 @@ services:
       - cesizen_net
 
   glpi:
-    image: diouck/glpi:latest
+    image: clarkson/glpi:latest
     container_name: cesizen_glpi
     restart: always
     ports:
