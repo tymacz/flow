@@ -26,10 +26,18 @@ class GLPIService
      */
     protected function initSession(): ?string
     {
+        if (empty($this->userToken)) {
+            Log::error('GLPI initSession error: user_token is empty in Laravel config.');
+            return null;
+        }
+    
         $response = Http::withHeaders([
             'App-Token' => $this->appToken,
             'Authorization' => 'user_token ' . $this->userToken,
-        ])->get("{$this->baseUrl}/initSession");
+            'User-Token' => $this->userToken,
+        ])->get("{$this->baseUrl}/initSession", [
+            'user_token' => $this->userToken,
+        ]);
     
         if ($response->successful()) {
             return $response->json('session_token');
