@@ -24,6 +24,7 @@ const navLinks = [
   { name: "Exercices", href: "/exercices" },
   { name: "Articles", href: "/articles" },
   { name: "Progression", href: "/progression" },
+  { name: "Support", href:"/tickets/new"
 ];
 
 export function Topbar() {
