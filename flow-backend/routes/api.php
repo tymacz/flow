@@ -5,11 +5,12 @@ use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\MoodController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProgressController;
+use App\Http\Controllers\TicketController;
 
 // Routes Publiques & Authentification
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::post('/tickets',[TicketController::class, 'store']);
 // --- CRUD ACTIVITÉS ---
 Route::get('/activities', [ContentController::class, 'indexActivities']);
 Route::get('/activities/{id}', [ContentController::class, 'showActivity']);
