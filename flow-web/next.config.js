@@ -13,7 +13,7 @@ const nextConfig = {
       fallback: [
         {
           source: '/api/:path*',
-          destination: 'http://backend:8000/api/:path*',
+          destination: 'http://cesizen_backend:8000/api/:path*',
         },
       ],
     };
