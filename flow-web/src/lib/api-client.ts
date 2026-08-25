@@ -7,7 +7,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     ? endpoint
     : `/api${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
     
-  const url = `${BASE_URL}${cleanEndpoint}`;
+  const url = `${BASE_URL}${endpoint}`;
   
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
