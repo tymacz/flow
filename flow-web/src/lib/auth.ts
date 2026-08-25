@@ -9,10 +9,30 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        // Logique d'authentification
-        return null;
+  async authorize(credentials) {
+      // 1. Toujours cibler le nom du conteneur Docker en serveur
+      const res = await fetch("http://cesizen_backend:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        // 2. Vérifier que les noms de clés correspondent à $request->validate() de Laravel
+        body: JSON.stringify({
+          email: credentials?.email,
+          password: credentials?.password,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok && data) {
+        // 3. NextAuth attend un objet contenant au minimum un identifiant (id ou email)
+        return data.user ?? data;
       }
+  
+      return null;
+    }
     })
   ],
   session: { strategy: "jwt" },
