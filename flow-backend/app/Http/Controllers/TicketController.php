@@ -1,4 +1,14 @@
-public function store(Request $request, GLPIService $glpiService)
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Services\GLPIService;
+use Illuminate\Http\Request;
+
+class TicketController extends Controller
+{
+    public function store(Request $request, GLPIService $glpiService)
 {
     $validated = $request->validate([
         'title' => 'required|string|max:255',
@@ -24,4 +34,5 @@ public function store(Request $request, GLPIService $glpiService)
         'message' => 'Ticket et fichiers transmis avec succès',
         'glpi_id' => $ticket['id'],
     ], 201);
+}
 }
