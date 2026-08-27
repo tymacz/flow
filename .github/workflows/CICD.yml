@@ -23,7 +23,7 @@ jobs:
       # Installation et vérifications dans le dossier web
       - name: Installation des dépendances (Web)
         working-directory: ./flow-web
-        run: npm ci # ou npm install selon tes habitudes
+        run: npm install
 
       - name: Vérification du formatage (Prettier)
         working-directory: ./flow-web
