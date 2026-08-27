@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -41,6 +42,7 @@ export default function LoginForm() {
       }
     } catch (err) {
       setErrorMessage("Une erreur inattendue est survenue.");
+      console.error("Erreur lors de la connexion :", err);
       setLoading(false);
     }
   };

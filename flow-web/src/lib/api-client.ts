@@ -6,10 +6,6 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const cleanEndpoint = endpoint.startsWith("/api")
-    ? endpoint
-    : `/api${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
-
   const url = `${BASE_URL}${endpoint}`;
 
   const headers = new Headers(options.headers);
@@ -29,7 +25,10 @@ async function request<T>(
       headers.set("Authorization", `Bearer ${session.user.accessToken}`);
     }
   } catch (error) {
-    console.warn("Impossible de récupérer la session NextAuth pour le token.");
+    console.warn(
+      "Impossible de récupérer la session NextAuth pour le token.",
+      error,
+    );
   }
   // -------------------------------------
 
