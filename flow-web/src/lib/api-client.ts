@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://192.168.1.3:8000";
 
 async function request<T>(
   endpoint: string,
@@ -9,9 +9,9 @@ async function request<T>(
   const cleanEndpoint = endpoint.startsWith("/api")
     ? endpoint
     : `/api${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
-
-  const url = `${BASE_URL}${cleanEndpoint}`;
-
+    
+  const url = `${BASE_URL}${endpoint}`;
+  
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
 

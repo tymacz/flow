@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -12,9 +14,9 @@ class GLPIService
 
     public function __construct()
     {
-        $this->baseUrl = rtrim(config('services.glpi.url'), '/');
-        $this->appToken = config('services.glpi.app_token', '');
-        $this->userToken = config('services.glpi.user_token', '');
+        $this->baseUrl = rtrim((string) config('services.glpi.url', 'http://glpi/apirest.php'), '/');
+        $this->appToken = (string) config('services.glpi.app_token', '');
+        $this->userToken = (string) config('services.glpi.user_token', '');
     }
 
 
@@ -24,15 +26,23 @@ class GLPIService
      */
     protected function initSession(): ?string
     {
+        if (empty($this->userToken)) {
+            Log::error('GLPI initSession error: user_token is empty in Laravel config.');
+            return null;
+        }
+    
         $response = Http::withHeaders([
             'App-Token' => $this->appToken,
             'Authorization' => 'user_token ' . $this->userToken,
-        ])->get("{$this->baseUrl}/initSession");
-
+            'User-Token' => $this->userToken,
+        ])->get("{$this->baseUrl}/initSession", [
+            'user_token' => $this->userToken,
+        ]);
+    
         if ($response->successful()) {
             return $response->json('session_token');
         }
-
+    
         Log::error('GLPI initSession error', ['body' => $response->body()]);
         return null;
     }

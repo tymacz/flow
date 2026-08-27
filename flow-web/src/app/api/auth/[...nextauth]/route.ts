@@ -1,7 +1,6 @@
-import { handlers } from "@/server/auth";
+import NextAuth from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
-export const { GET, POST } = handlers;
+export const dynamic = 'force-dynamic';
 
-export const authOptions = {
-  trustHost: true,
-};
+export const { GET, POST } = NextAuth(authOptions).handlers;

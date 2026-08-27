@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -43,6 +44,7 @@ class AuthController extends Controller
     // Connexion
     public function login(Request $request)
     {
+        Log::info('Login Request Data:', $request->all());
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json(['message' => 'Identifiants invalides'], 401);
         }

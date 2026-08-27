@@ -12,16 +12,24 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-# URL relative : le navigateur appellera http://TON_IP:3000/api
 ENV NEXT_PUBLIC_API_URL=/api
+
+ENV NEXTAUTH_SECRET="build_secret_placeholder_for_docker"
+ENV NEXTAUTH_URL="http://localhost:3000"
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
 RUN npm run build
 
-# Stage 3: Runner
+# Stage 3: Runner (Image finale de production)
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV AUTH_TRUST_HOST=true
+
+# Variables indispensables au RUNTIME pour NextAuth et T3 Env
+ENV NEXTAUTH_URL="http://localhost:3000"
+ENV NEXTAUTH_SECRET="change_me_in_docker_compose_secret"
 
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs

@@ -1,0 +1,90 @@
+name: CI - Code Quality & Security
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # -------------------------------------------
+  # SÉCURITÉ : Scan de vulnérabilités avec Trivy
+  # -------------------------------------------
+  security:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+  # -------------------------------------------
+  # FRONTEND : Next.js (flow-web)
+  # -------------------------------------------
+  frontend:
+    name: Frontend (Next.js) - Lint & Types
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./flow-web
+    # Ne se lance que si des fichiers web sont modifiés
+    # (Retire la condition si tu veux forcer l'exécution à chaque fois)
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './flow-web/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Types
+        run: npx tsc --noEmit
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # -------------------------------------------
+  # BACKEND : Laravel (flow-backend)
+  # -------------------------------------------
+  backend:
+    name: Backend (Laravel) - Lint & Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./flow-backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # À ajuster selon ta version exacte
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Décommente cette ligne si tu utilises Laravel Pint ou PHP_CodeSniffer
+      # - name: Run Linter (Pint)
+      #   run: ./vendor/bin/pint --test
+
+      - name: Run PHPUnit Tests
+        run: php artisan test
