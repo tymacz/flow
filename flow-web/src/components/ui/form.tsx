@@ -17,7 +17,7 @@ interface FormFieldContextValue<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
   name: TName;
-};
+}
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
@@ -61,7 +61,7 @@ const useFormField = () => {
 
 interface FormItemContextValue {
   id: string;
-};
+}
 
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,

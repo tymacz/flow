@@ -292,7 +292,7 @@ export default function ProfilDynamiquePage() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={()=> void handleDeleteAccount}
+                    onClick={() => void handleDeleteAccount}
                     className="bg-destructive hover:bg-destructive/90"
                   >
                     Confirmer la suppression
