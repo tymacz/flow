@@ -81,7 +81,7 @@ export default function ProfilDynamiquePage() {
         const prefs =
           typeof user.preferences === "string"
             ? JSON.parse(user.preferences)
-            : user.preferences ?? {};
+            : (user.preferences ?? {});
 
         form.reset({
           prenom: user.prenom ?? "",

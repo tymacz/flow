@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  BookOpen,
-  AlertCircle,
-  Search,
-  User,
-  Tag,
-} from "lucide-react";
+import { BookOpen, AlertCircle, Search, User, Tag } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";

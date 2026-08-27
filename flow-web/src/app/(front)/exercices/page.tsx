@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PlayCircle, Clock, AlertCircle, Search, Filter } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import Image from 'next/image';
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -37,7 +37,7 @@ export default function ExercicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Toutes");
 
-  // Liste des catégories disponibles 
+  // Liste des catégories disponibles
   const categories = [
     "Toutes",
     "HIIT",

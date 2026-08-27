@@ -63,7 +63,7 @@ export default function EditerArticlePage() {
           image_url: item.image_url ?? "",
           tags: Array.isArray(item.tags)
             ? item.tags.join(", ")
-            : item.tags ?? "",
+            : (item.tags ?? ""),
         });
       } catch (error: any) {
         setApiError(error.message ?? "Impossible de charger l'article.");
