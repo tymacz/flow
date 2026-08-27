@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/tymacz/flow/compare/v1.0.0...v1.0.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* prettier ([c316673](https://github.com/tymacz/flow/commit/c316673a962d5e01847080809fea82542cfc5e8c))
+
 # 1.0.0 (2026-08-25)
 
 ### Features
