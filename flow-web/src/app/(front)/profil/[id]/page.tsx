@@ -10,7 +10,13 @@ import { Loader2, AlertCircle, Trash2, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { apiClient } from "@/lib/api-client";
 import {
@@ -40,7 +46,7 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 export default function ProfilDynamiquePage() {
   const router = useRouter();
   const params = useParams();
-  
+
   // Extraction de l'ID depuis l'URL dynamique profil/[id]
   const userId = params.id as string;
 
@@ -68,13 +74,14 @@ export default function ProfilDynamiquePage() {
       try {
         setIsLoading(true);
         setApiError(null);
-        
+
         // Appel ciblé vers Laravel avec l'identifiant de la route
         const user = await apiClient.get<any>(`/user/${userId}`);
-        
-        const prefs = typeof user.preferences === "string" 
-          ? JSON.parse(user.preferences) 
-          : (user.preferences || {});
+
+        const prefs =
+          typeof user.preferences === "string"
+            ? JSON.parse(user.preferences)
+            : user.preferences || {};
 
         form.reset({
           prenom: user.prenom || "",
@@ -86,7 +93,9 @@ export default function ProfilDynamiquePage() {
           text_size: prefs.text_size ?? 3,
         });
       } catch (err: any) {
-        setApiError(err.message || "Impossible de charger les informations de ce profil.");
+        setApiError(
+          err.message || "Impossible de charger les informations de ce profil.",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -132,20 +141,22 @@ export default function ProfilDynamiquePage() {
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 pt-10">
+    <div className="mx-auto max-w-2xl space-y-8 pt-10">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profil Utilisateur</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Profil Utilisateur
+        </h1>
         <p className="text-muted-foreground text-sm">Identifiant : {userId}</p>
       </div>
 
       {apiError && (
-        <div className="p-4 bg-destructive/10 text-destructive rounded-md flex items-center gap-2">
+        <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-md p-4">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <p className="text-sm font-medium">{apiError}</p>
         </div>
@@ -156,53 +167,109 @@ export default function ProfilDynamiquePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" /> Informations Personnelles
+                <User className="text-primary h-5 w-5" /> Informations
+                Personnelles
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField control={form.control} name="prenom" render={({ field }) => (
-                  <FormItem><FormLabel>Prénom</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                )} />
-                <FormField control={form.control} name="nom" render={({ field }) => (
-                  <FormItem><FormLabel>Nom</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-                )} />
+                <FormField
+                  control={form.control}
+                  name="prenom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prénom</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="nom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nom</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
-              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem><FormLabel>Adresse Email</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-              )} />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adresse Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" /> Préférences d&apos;accessibilité
+                <Settings className="text-primary h-5 w-5" /> Préférences
+                d&apos;accessibilité
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField control={form.control} name="notifications" render={({ field }) => (
-                <div className="flex items-center justify-between py-2 border-b">
-                  <FormLabel className="cursor-pointer">Activer les notifications</FormLabel>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </div>
-              )} />
-              <FormField control={form.control} name="high_contrast" render={({ field }) => (
-                <div className="flex items-center justify-between py-2 border-b">
-                  <FormLabel className="cursor-pointer">Mode contraste élevé</FormLabel>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </div>
-              )} />
-              <FormField control={form.control} name="reduced_anim" render={({ field }) => (
-                <div className="flex items-center justify-between py-2">
-                  <FormLabel className="cursor-pointer">Animations réduites</FormLabel>
-                  <Switch checked={field.value} onCheckedChange={field.onChange} />
-                </div>
-              )} />
+              <FormField
+                control={form.control}
+                name="notifications"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between border-b py-2">
+                    <FormLabel className="cursor-pointer">
+                      Activer les notifications
+                    </FormLabel>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="high_contrast"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between border-b py-2">
+                    <FormLabel className="cursor-pointer">
+                      Mode contraste élevé
+                    </FormLabel>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="reduced_anim"
+                render={({ field }) => (
+                  <div className="flex items-center justify-between py-2">
+                    <FormLabel className="cursor-pointer">
+                      Animations réduites
+                    </FormLabel>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
             </CardContent>
           </Card>
 
-          <div className="flex justify-between items-center pt-4">
+          <div className="flex items-center justify-between pt-4">
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" className="gap-2">
@@ -211,20 +278,26 @@ export default function ProfilDynamiquePage() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes-vous absolument sûr ?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Êtes-vous absolument sûr ?
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette action supprimera définitivement le compte utilisateur associé de la base de données de l&apos;application Flow.
+                    Cette action supprimera définitivement le compte utilisateur
+                    associé de la base de données de l&apos;application Flow.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
+                  <AlertDialogAction
+                    onClick={handleDeleteAccount}
+                    className="bg-destructive hover:bg-destructive/90"
+                  >
                     Confirmer la suppression
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
+
             <Button type="submit" disabled={isSaving}>
               {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sauvegarder les modifications

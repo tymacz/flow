@@ -2,7 +2,10 @@ import { getSession } from "next-auth/react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://192.168.1.3:8000";
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+async function request<T>(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<T> {
   const cleanEndpoint = endpoint.startsWith("/api")
     ? endpoint
     : `/api${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
@@ -11,7 +14,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
-  
+
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
@@ -20,6 +23,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   // On récupère la session actuelle de NextAuth côté client
   try {
     const session = await getSession();
+    console.log("Token envoyé :", session?.user?.accessToken);
     // Si l'utilisateur est connecté et possède un jeton, on l'ajoute aux Headers
     if (session?.user?.accessToken) {
       headers.set("Authorization", `Bearer ${session.user.accessToken}`);
@@ -43,15 +47,23 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, options?: RequestInit) => 
+  get: <T>(endpoint: string, options?: RequestInit) =>
     request<T>(endpoint, { method: "GET", ...options }),
-    
-  post: <T>(endpoint: string, body: any, options?: RequestInit) => 
-    request<T>(endpoint, { method: "POST", body: JSON.stringify(body), ...options }),
-    
-  put: <T>(endpoint: string, body: any, options?: RequestInit) => 
-    request<T>(endpoint, { method: "PUT", body: JSON.stringify(body), ...options }),
-    
-  delete: <T>(endpoint: string, options?: RequestInit) => 
+
+  post: <T>(endpoint: string, body: any, options?: RequestInit) =>
+    request<T>(endpoint, {
+      method: "POST",
+      body: JSON.stringify(body),
+      ...options,
+    }),
+
+  put: <T>(endpoint: string, body: any, options?: RequestInit) =>
+    request<T>(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(body),
+      ...options,
+    }),
+
+  delete: <T>(endpoint: string, options?: RequestInit) =>
     request<T>(endpoint, { method: "DELETE", ...options }),
 };

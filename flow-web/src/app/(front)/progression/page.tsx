@@ -1,10 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, AlertCircle, LineChart, Calendar, Target, Smile, Activity } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  LineChart,
+  Calendar,
+  Target,
+  Smile,
+  Activity,
+} from "lucide-react";
 import { apiClient } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface MoodEntry {
   id: number;
@@ -15,9 +30,9 @@ interface MoodEntry {
 
 interface ActivityEntry {
   id: number;
-  titre: string;
-  duree: number;
-  created_at: string;
+  title: string;
+  duration_minutes: number;
+  date: string;
 }
 
 export default function ProgressionPage() {
@@ -30,20 +45,23 @@ export default function ProgressionPage() {
     async function fetchUserStats() {
       try {
         setIsLoading(true);
+        setError(null);
+
         const [moodRes, activityRes] = await Promise.all([
           apiClient.get<any>("/humeur/historique"),
           apiClient.get<any>("/progress"),
         ]);
 
-        // SÉCURITÉ : On vérifie si Laravel a encapsulé le tableau dans "data"
-        // Si c'est un tableau on le prend direct, sinon on cherche .data, sinon on met un tableau vide []
-        const moodArray = Array.isArray(moodRes) ? moodRes : (moodRes?.data || []);
-        const activityArray = Array.isArray(activityRes) ? activityRes : (activityRes?.data || []);
+        // Pour l'humeur : Laravel renvoie maintenant le tableau directement
+        setMoodHistory(moodRes || []);
 
-        setMoodHistory(moodArray);
-        setActivityHistory(activityArray);
+        // Pour les activités : Laravel renvoie un objet avec "stats", "score", et "history"
+        // On va cibler directement activityRes.history
+        setActivityHistory(activityRes?.history || []);
       } catch (err: any) {
-        setError("Impossible de récupérer vos données de progression.");
+        console.error("Détail de l'erreur API :", err);
+        // Affiche le message d'erreur réel reçu du serveur ou de l'API
+        setError(err.message || "Erreur inconnue lors du chargement.");
       } finally {
         setIsLoading(false);
       }
@@ -54,31 +72,37 @@ export default function ProgressionPage() {
   if (isLoading) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-12 pt-6">
+    <div className="space-y-8 pt-6 pb-12">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Mon Espace Progression</h1>
-        <p className="text-muted-foreground">Retrouvez vos activités passées et l&apos;évolution de votre humeur.</p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Mon Espace Progression
+        </h1>
+        <p className="text-muted-foreground">
+          Retrouvez vos activités passées et l&apos;évolution de votre humeur.
+        </p>
       </div>
 
       {error && (
-        <div className="flex items-center gap-3 rounded-xl bg-destructive/10 p-4 text-destructive">
+        <div className="bg-destructive/10 text-destructive flex items-center gap-3 rounded-xl p-4">
           <AlertCircle className="h-5 w-5" />
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       {/* Cartes de Stats Rapides */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Activités</CardTitle>
-            <Activity className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">
+              Total Activités
+            </CardTitle>
+            <Activity className="text-primary h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activityHistory.length}</div>
@@ -86,8 +110,10 @@ export default function ProgressionPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Dernière Humeur</CardTitle>
-            <Smile className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">
+              Dernière Humeur
+            </CardTitle>
+            <Smile className="text-primary h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -98,19 +124,23 @@ export default function ProgressionPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Temps Total</CardTitle>
-            <Target className="h-4 w-4 text-primary" />
+            <Target className="text-primary h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {/* Le reduce fonctionnera toujours maintenant car on est sûr à 100% que c'est un tableau */}
-              {activityHistory.reduce((acc, curr) => acc + (curr.duree || 0), 0)} min
+              {activityHistory.reduce(
+                (acc, curr) => acc + (curr.duree || 0),
+                0,
+              )}{" "}
+              min
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Sections Détails */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Historique Activités */}
         <Card>
           <CardHeader>
@@ -121,7 +151,9 @@ export default function ProgressionPage() {
           </CardHeader>
           <CardContent>
             {activityHistory.length === 0 ? (
-               <p className="text-sm text-muted-foreground text-center py-4">Aucune activité enregistrée.</p>
+              <p className="text-muted-foreground py-4 text-center text-sm">
+                Aucune activité enregistrée.
+              </p>
             ) : (
               <Table>
                 <TableHeader>
@@ -134,9 +166,11 @@ export default function ProgressionPage() {
                 <TableBody>
                   {activityHistory.slice(0, 5).map((act, index) => (
                     <TableRow key={act.id || index}>
-                      <TableCell className="font-medium">{act.titre || "Séance sans titre"}</TableCell>
-                      <TableCell>{act.duree || 0} min</TableCell>
-                      <TableCell>{act.created_at ? new Date(act.created_at).toLocaleDateString("fr-FR") : "-"}</TableCell>
+                      <TableCell className="font-medium">
+                        {act.title || "Séance sans titre"}
+                      </TableCell>
+                      <TableCell>{act.duration_minutes || 0} min</TableCell>
+                      <TableCell>{act.date || "-"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -155,7 +189,9 @@ export default function ProgressionPage() {
           </CardHeader>
           <CardContent>
             {moodHistory.length === 0 ? (
-               <p className="text-sm text-muted-foreground text-center py-4">Aucune humeur enregistrée.</p>
+              <p className="text-muted-foreground py-4 text-center text-sm">
+                Aucune humeur enregistrée.
+              </p>
             ) : (
               <Table>
                 <TableHeader>
@@ -169,12 +205,22 @@ export default function ProgressionPage() {
                   {moodHistory.slice(0, 5).map((mood, index) => (
                     <TableRow key={mood.id || index}>
                       <TableCell>
-                          <span className="text-lg">
-                              {mood.mood_value >= 4 ? "😊" : mood.mood_value >= 3 ? "😐" : "😞"}
-                          </span>
+                        <span className="text-lg">
+                          {mood.mood_value >= 4
+                            ? "😊"
+                            : mood.mood_value >= 3
+                              ? "😐"
+                              : "😞"}
+                        </span>
                       </TableCell>
                       <TableCell>{mood.note || "Pas de commentaire"}</TableCell>
-                      <TableCell>{mood.created_at ? new Date(mood.created_at).toLocaleDateString("fr-FR") : "-"}</TableCell>
+                      <TableCell>
+                        {mood.created_at
+                          ? new Date(mood.created_at).toLocaleDateString(
+                              "fr-FR",
+                            )
+                          : "-"}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

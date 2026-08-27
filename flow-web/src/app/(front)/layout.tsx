@@ -10,10 +10,8 @@ export default function RootLayout({
     <html lang="fr">
       <body>
         <SessionProvider>
-        <Topbar />
-        <main className="min-h-screen flex-1">
-          {children}
-          </main>
+          <Topbar />
+          <main className="min-h-screen flex-1">{children}</main>
         </SessionProvider>
       </body>
     </html>
