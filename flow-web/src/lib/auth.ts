@@ -1,7 +1,7 @@
-import { AuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -10,7 +10,7 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email ?? !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
         // L'URL serveur pointe vers le service Docker 'backend' (port 8000)
         const apiBase =

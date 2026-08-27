@@ -34,7 +34,7 @@ export function Sidebar() {
             const Icon = link.icon;
             // On vérifie si on est sur la route exacte OU sur une sous-route (ex: /admin/articles/creation)
             const isActive =
-              pathname === link.href ?? pathname.startsWith(`${link.href}/`);
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
 
             return (
               <Link

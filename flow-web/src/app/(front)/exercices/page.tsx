@@ -78,7 +78,7 @@ export default function ExercicesPage() {
 
       const matchesSearch = title.includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedCategory === "Toutes" ?? category === selectedCategory;
+        selectedCategory === "Toutes" || category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });

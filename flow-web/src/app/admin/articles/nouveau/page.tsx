@@ -98,7 +98,7 @@ export default function NouvelArticlePage() {
       <div className="bg-background rounded-md border p-6">
         <Form {...form}>
           <form
-            onSubmit={() => voidform.handleSubmit(onSubmit)}
+            onSubmit={() => void form.handleSubmit(onSubmit)}
             className="space-y-6"
           >
             <div className="grid grid-cols-2 gap-4">

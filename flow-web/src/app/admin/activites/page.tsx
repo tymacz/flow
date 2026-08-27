@@ -161,7 +161,7 @@ export default function ActivitesCrudPage() {
                   activite.categorie ?? activite.category ?? "Non classé";
                 const displayDuration =
                   activite.duree_minutes ?? activite.duration ?? 0;
-                const realId = activite._id ?? activite.id;
+                const realId = activite._id ?? activite._id;
 
                 return (
                   <TableRow key={realId}>

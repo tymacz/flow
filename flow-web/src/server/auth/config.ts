@@ -32,7 +32,7 @@ export const authConfig = {
         password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email ?? !credentials?.password) return null;
+        if (!credentials?.email || !credentials?.password) return null;
 
         try {
           const response = await fetch(

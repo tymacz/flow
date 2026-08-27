@@ -129,7 +129,7 @@ export default function ProgressionPage() {
             <div className="text-2xl font-bold">
               {/* Le reduce fonctionnera toujours maintenant car on est sûr à 100% que c'est un tableau */}
               {activityHistory.reduce(
-                (acc, curr) => acc + (curr.duree ?? 0),
+                (acc, curr) => acc + (curr.duration_minutes ?? 0),
                 0,
               )}{" "}
               min
