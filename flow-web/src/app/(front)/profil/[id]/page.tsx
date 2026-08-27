@@ -163,7 +163,10 @@ export default function ProfilDynamiquePage() {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={() => void form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Plus,
-  Search,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
 import {
   Table,
@@ -154,9 +152,8 @@ export default function ArticlesCrudPage() {
               articles.map((article) => {
                 const displayTitle =
                   article.titre ?? article.title ?? "Sans titre";
-                const displayAuthor =
-                  article.auteur ?? article.author ?? "Inconnu";
-                const realId = article._id ?? article.id;
+                const displayAuthor = article.auteur ?? "Inconnu";
+                const realId = article._id ?? article._id;
                 return (
                   <TableRow key={realId}>
                     <TableCell className="font-medium">

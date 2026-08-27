@@ -121,7 +121,7 @@ export default function InscriptionPage() {
           )}
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={() => void form.handleSubmit(onSubmit)}>
               <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField

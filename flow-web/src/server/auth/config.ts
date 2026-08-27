@@ -72,13 +72,14 @@ export const authConfig = {
 
           return null;
         } catch (error) {
+          console.error("Erreur lors de la connexion :", error);
           return null;
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -89,7 +90,7 @@ export const authConfig = {
       }
       return token;
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;

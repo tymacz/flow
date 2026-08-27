@@ -78,7 +78,7 @@ export default function TicketForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={() => void handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
             Sujet du ticket

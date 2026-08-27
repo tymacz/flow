@@ -104,7 +104,7 @@ export function Topbar() {
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => void signOut({ callbackUrl: "/" })}
                   className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
                 >
                   Déconnexion
