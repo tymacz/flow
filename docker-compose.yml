@@ -23,7 +23,7 @@ services:
     networks:
       - cesizen_net
 
-# Backend API Laravel
+  # Backend API Laravel
   backend:
     build:
       context: ./flow-backend
@@ -52,26 +52,26 @@ services:
     networks:
       - cesizen_net
 
-# Frontend Web Next.js
+  # Frontend Web Next.js
   frontend:
-      build:
-        context: ./flow-web
-        dockerfile: Dockerfile
-      container_name: cesizen_frontend
-      restart: always
-      ports:
-        - "3000:3000"
-      environment:
-        - AUTH_TRUST_HOST=true
-        - NODE_ENV=production
-        - NEXTAUTH_URL=http://192.168.1.3:3000
-        - NEXTAUTH_SECRET=vrai_secret_tres_securise_ici
-        - INTERNAL_API_URL=http://backend:8000/api
-        - NEXT_PUBLIC_API_URL=http://localhost:8000/api
-      depends_on:
-        - backend
-      networks:
-        - cesizen_net
+    build:
+      context: ./flow-web
+      dockerfile: Dockerfile
+    container_name: cesizen_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - AUTH_TRUST_HOST=true
+      - NODE_ENV=production
+      - NEXTAUTH_URL=http://192.168.1.3:3000
+      - NEXTAUTH_SECRET=vrai_secret_tres_securise_ici
+      - INTERNAL_API_URL=http://backend:8000/api
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    networks:
+      - cesizen_net
 
   glpi_db:
     image: mariadb:10.11

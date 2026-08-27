@@ -2,9 +2,9 @@ name: CI - Code Quality & Security
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   # -------------------------------------------
@@ -20,10 +20,10 @@ jobs:
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
+          scan-type: "fs"
           ignore-unfixed: true
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
+          format: "table"
+          severity: "CRITICAL,HIGH"
 
   # -------------------------------------------
   # FRONTEND : Next.js (flow-web)
@@ -38,13 +38,13 @@ jobs:
     # (Retire la condition si tu veux forcer l'exécution à chaque fois)
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: './flow-web/package-lock.json'
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "./flow-web/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
@@ -70,7 +70,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2' # À ajuster selon ta version exacte
+          php-version: "8.2" # À ajuster selon ta version exacte
           coverage: none
           tools: composer:v2
 

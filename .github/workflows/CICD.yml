@@ -2,7 +2,7 @@ name: CI/CD Pipeline CESIZen
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   # ==========================================
@@ -18,7 +18,7 @@ jobs:
       - name: Configuration de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       # Installation et vérifications dans le dossier web
       - name: Installation des dépendances (Web)
@@ -41,11 +41,11 @@ jobs:
       - name: Scan de vulnérabilités (Trivy SAST)
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          exit-code: '1' # Fait échouer la CI si des failles sont trouvées
-          severity: 'CRITICAL,HIGH'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          exit-code: "1" # Fait échouer la CI si des failles sont trouvées
+          severity: "CRITICAL,HIGH"
 
   # ==========================================
   # 2. DÉPLOIEMENT CONTINU (CD)
@@ -54,7 +54,7 @@ jobs:
     name: Build & Deploy sur Serveur Linux Privé
     needs: ci # ATTENTION : Ce job attend que 'ci' soit validé
     runs-on: self-hosted
-    
+
     steps:
       - name: Récupération des sources
         uses: actions/checkout@v4
@@ -108,11 +108,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Requis par semantic-release pour analyser l'historique des commits
-          
+
       - name: Configuration de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Exécution de Semantic Release
         env:

@@ -2,13 +2,13 @@ name: Deployment Pipeline CESIZen
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   deploy:
     name: Build & Deploy sur Serveur Linux Privé
     runs-on: self-hosted
-    
+
     steps:
       - name: Récupération des sources
         uses: actions/checkout@v4
