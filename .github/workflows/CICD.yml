@@ -103,16 +103,19 @@ jobs:
     name: Semantic Release
     needs: deploy # ATTENTION : Ce job attend que 'deploy' soit validé
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write 
     steps:
       - name: Récupération des sources (avec historique)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Requis par semantic-release pour analyser l'historique des commits
-
+          fetch-depth: 0 
       - name: Configuration de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Exécution de Semantic Release
         env:
