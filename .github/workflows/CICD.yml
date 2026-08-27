@@ -1,0 +1,120 @@
+name: CI/CD Pipeline CESIZen
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # ==========================================
+  # 1. INTÉGRATION CONTINUE (CI)
+  # ==========================================
+  ci:
+    name: Checks (Prettier, ESLint, TSC) & Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération des sources
+        uses: actions/checkout@v4
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Installation et vérifications dans le dossier web
+      - name: Installation des dépendances (Web)
+        working-directory: ./flow-web
+        run: npm ci # ou npm install selon tes habitudes
+
+      - name: Vérification du formatage (Prettier)
+        working-directory: ./flow-web
+        run: npx prettier --check .
+
+      - name: Analyse de code (ESLint)
+        working-directory: ./flow-web
+        run: npm run lint # ou "npx eslint ." si le script n'est pas dans le package.json
+
+      - name: Vérification des types (TypeScript)
+        working-directory: ./flow-web
+        run: npx tsc --noEmit
+
+      # Scan de sécurité sur tout le dépôt
+      - name: Scan de vulnérabilités (Trivy SAST)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1' # Fait échouer la CI si des failles sont trouvées
+          severity: 'CRITICAL,HIGH'
+
+  # ==========================================
+  # 2. DÉPLOIEMENT CONTINU (CD)
+  # ==========================================
+  deploy:
+    name: Build & Deploy sur Serveur Linux Privé
+    needs: ci # ATTENTION : Ce job attend que 'ci' soit validé
+    runs-on: self-hosted
+    
+    steps:
+      - name: Récupération des sources
+        uses: actions/checkout@v4
+
+      - name: Génération d'un fichier .env backend propre
+        run: |
+          cat << 'EOF' > flow-backend/.env
+          APP_NAME=Flow
+          APP_ENV=production
+          APP_KEY=
+          APP_DEBUG=false
+          APP_URL=http://localhost:8000
+
+          DB_CONNECTION=pgsql
+          DB_HOST=db
+          DB_PORT=5432
+          DB_DATABASE=flow_db
+          DB_USERNAME=flow_user
+          DB_PASSWORD=secret_password
+
+          MONGODB_HOST=mongo
+          MONGODB_PORT=27017
+          MONGODB_DATABASE=flow_db
+          MONGODB_URI=mongodb://mongo:27017/flow_db
+          EOF
+
+      - name: Déploiement des conteneurs Docker
+        run: |
+          docker compose down
+          docker compose up -d --build --remove-orphans
+
+      - name: Attente du démarrage des bases
+        run: sleep 10
+
+      - name: Initialisation Laravel
+        run: |
+          docker exec cesizen_backend php artisan config:clear
+          docker exec cesizen_backend php artisan cache:clear
+          docker exec cesizen_backend php artisan key:generate --force
+          docker exec cesizen_backend php artisan migrate --database=pgsql --force
+
+  # ==========================================
+  # 3. SEMANTIC RELEASE (TAGS)
+  # ==========================================
+  release:
+    name: Semantic Release
+    needs: deploy # ATTENTION : Ce job attend que 'deploy' soit validé
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération des sources (avec historique)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Requis par semantic-release pour analyser l'historique des commits
+          
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Exécution de Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Nécessaire pour créer le tag et la release sur GitHub
+        run: npx semantic-release
