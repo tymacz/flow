@@ -55,18 +55,18 @@ export default function EditerArticlePage() {
     async function loadArticle() {
       try {
         const data = await apiClient.get<any>(`/articles/${articleId}`);
-        const item = data.data || data;
+        const item = data.data ?? data;
         form.reset({
-          titre: item.titre || "",
-          auteur: item.auteur || "",
-          contenu: item.contenu || "",
-          image_url: item.image_url || "",
+          titre: item.titre ?? "",
+          auteur: item.auteur ?? "",
+          contenu: item.contenu ?? "",
+          image_url: item.image_url ?? "",
           tags: Array.isArray(item.tags)
             ? item.tags.join(", ")
-            : item.tags || "",
+            : item.tags ?? "",
         });
       } catch (error: any) {
-        setApiError(error.message || "Impossible de charger l'article.");
+        setApiError(error.message ?? "Impossible de charger l'article.");
       } finally {
         setIsFetching(false);
       }
@@ -89,7 +89,7 @@ export default function EditerArticlePage() {
       router.push("/admin/articles");
       router.refresh();
     } catch (error: any) {
-      setApiError(error.message || "Erreur de mise à jour.");
+      setApiError(error.message ?? "Erreur de mise à jour.");
     } finally {
       setIsSubmitting(false);
     }

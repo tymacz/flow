@@ -10,11 +10,11 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email ?? !credentials?.password) return null;
 
         // L'URL serveur pointe vers le service Docker 'backend' (port 8000)
         const apiBase =
-          process.env.INTERNAL_API_URL || "http://backend:8000/api";
+          process.env.INTERNAL_API_URL ?? "http://backend:8000/api";
         const loginUrl = `${apiBase.replace(/\/$/, "")}/login`;
 
         const res = await fetch(loginUrl, {
@@ -39,7 +39,7 @@ export const authOptions: AuthOptions = {
 
         // Auth.js exige un objet avec un champ 'id' (string) à la racine
         return {
-          id: String(data.user._id || data.user.id),
+          id: String(data.user._id ?? data.user.id),
           name: data.user.name,
           email: data.user.email,
           accessToken: data.access_token,
@@ -48,5 +48,5 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET || "fallback_secret_for_build",
+  secret: process.env.NEXTAUTH_SECRET ?? "fallback_secret_for_build",
 };

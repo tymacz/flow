@@ -62,16 +62,16 @@ export default function EditerActivitePage() {
     async function loadActivite() {
       try {
         const data = await apiClient.get<any>(`/activities/${activiteId}`);
-        const item = data.data || data;
+        const item = data.data ?? data;
         form.reset({
-          titre: item.titre || "",
-          categorie: item.categorie || "",
-          duree_minutes: item.duree_minutes || 15,
-          description: item.description || "",
-          image_url: item.image_url || "",
+          titre: item.titre ?? "",
+          categorie: item.categorie ?? "",
+          duree_minutes: item.duree_minutes ?? 15,
+          description: item.description ?? "",
+          image_url: item.image_url ?? "",
         });
       } catch (error: any) {
-        setApiError(error.message || "Impossible de charger l&apos;activité.");
+        setApiError(error.message ?? "Impossible de charger l&apos;activité.");
       } finally {
         setIsFetching(false);
       }
@@ -87,7 +87,7 @@ export default function EditerActivitePage() {
       router.push("/admin/activites");
       router.refresh();
     } catch (error: any) {
-      setApiError(error.message || "Erreur lors de la modification.");
+      setApiError(error.message ?? "Erreur lors de la modification.");
     } finally {
       setIsSubmitting(false);
     }

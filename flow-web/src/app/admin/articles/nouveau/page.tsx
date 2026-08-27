@@ -67,7 +67,7 @@ export default function NouvelArticlePage() {
       router.push("/admin/articles");
       router.refresh();
     } catch (error: any) {
-      setApiError(error.message || "Erreur lors de la création.");
+      setApiError(error.message ?? "Erreur lors de la création.");
     } finally {
       setIsLoading(false);
     }

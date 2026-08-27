@@ -62,7 +62,7 @@ export default function NouvelleActivitePage() {
       router.push("/admin/activites");
       router.refresh();
     } catch (error: any) {
-      setApiError(error.message || "Erreur de création.");
+      setApiError(error.message ?? "Erreur de création.");
     } finally {
       setIsLoading(false);
     }

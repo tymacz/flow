@@ -32,7 +32,7 @@ export const authConfig = {
         password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        if (!credentials?.email ?? !credentials?.password) return null;
 
         try {
           const response = await fetch(
@@ -54,12 +54,12 @@ export const authConfig = {
 
           const apiData = await response.json();
           console.log("Réponse API Laravel :", apiData);
-          const user = apiData.user || apiData;
+          const user = apiData.user ?? apiData;
           const token = apiData.token; // <-- Récupération du jeton envoyé par Laravel
 
           if (user) {
             return {
-              id: user._id || user.id,
+              id: user._id ?? user.id,
               name: `${user.prenom} ${user.nom}`,
               email: user.email,
               image: user.avatar_url,

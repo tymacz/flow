@@ -71,10 +71,10 @@ export default function ActivitesCrudPage() {
       try {
         // Attention au nom de ta route Laravel (activities ou activites)
         const response = await apiClient.get<any>("/activities");
-        const items = response.data || response;
+        const items = response.data ?? response;
         setActivites(items);
       } catch (error: any) {
-        setApiError(error.message || "Impossible de charger les activités.");
+        setApiError(error.message ?? "Impossible de charger les activités.");
       } finally {
         setIsLoading(false);
       }
@@ -163,7 +163,7 @@ export default function ActivitesCrudPage() {
                   activite.categorie ?? activite.category ?? "Non classé";
                 const displayDuration =
                   activite.duree_minutes ?? activite.duration ?? 0;
-                const realId = activite._id || activite.id;
+                const realId = activite._id ?? activite.id;
 
                 return (
                   <TableRow key={realId}>

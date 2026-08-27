@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://192.168.1.3:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://192.168.1.3:8000";
 
 async function request<T>(
   endpoint: string,
@@ -37,7 +37,7 @@ async function request<T>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Erreur API: ${response.status}`);
+    throw new Error(errorData.message ?? `Erreur API: ${response.status}`);
   }
 
   // Si c'est une réponse vide (ex: un DELETE réussi qui renvoie 204 No Content)

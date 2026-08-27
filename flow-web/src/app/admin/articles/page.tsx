@@ -68,10 +68,10 @@ export default function ArticlesCrudPage() {
       try {
         const response = await apiClient.get<any>("/articles");
         // Laravel encapsule souvent les listes dans "data" s'il y a une pagination
-        const items = response.data || response;
+        const items = response.data ?? response;
         setArticles(items);
       } catch (error: any) {
-        setApiError(error.message || "Impossible de charger les articles.");
+        setApiError(error.message ?? "Impossible de charger les articles.");
       } finally {
         setIsLoading(false);
       }
@@ -156,7 +156,7 @@ export default function ArticlesCrudPage() {
                   article.titre ?? article.title ?? "Sans titre";
                 const displayAuthor =
                   article.auteur ?? article.author ?? "Inconnu";
-                const realId = article._id || article.id;
+                const realId = article._id ?? article.id;
                 return (
                   <TableRow key={realId}>
                     <TableCell className="font-medium">

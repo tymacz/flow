@@ -39,7 +39,7 @@ export default function TicketForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Une erreur est survenue.");
+        throw new Error(data.message ?? "Une erreur est survenue.");
       }
 
       setStatus({
@@ -53,7 +53,7 @@ export default function TicketForm() {
     } catch (err: any) {
       setStatus({
         type: "error",
-        message: err.message || "Impossible d'envoyer le ticket.",
+        message: err.message ?? "Impossible d'envoyer le ticket.",
       });
     } finally {
       setLoading(false);

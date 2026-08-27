@@ -9,7 +9,7 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
   const urlError = searchParams.get("error");
 
   const [email, setEmail] = useState("");

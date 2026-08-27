@@ -81,12 +81,12 @@ export default function ProfilDynamiquePage() {
         const prefs =
           typeof user.preferences === "string"
             ? JSON.parse(user.preferences)
-            : user.preferences || {};
+            : user.preferences ?? {};
 
         form.reset({
-          prenom: user.prenom || "",
-          nom: user.nom || "",
-          email: user.email || "",
+          prenom: user.prenom ?? "",
+          nom: user.nom ?? "",
+          email: user.email ?? "",
           notifications: prefs.notifications ?? true,
           high_contrast: prefs.high_contrast ?? false,
           reduced_anim: prefs.reduced_anim ?? false,
@@ -94,7 +94,7 @@ export default function ProfilDynamiquePage() {
         });
       } catch (err: any) {
         setApiError(
-          err.message || "Impossible de charger les informations de ce profil.",
+          err.message ?? "Impossible de charger les informations de ce profil.",
         );
       } finally {
         setIsLoading(false);
@@ -122,7 +122,7 @@ export default function ProfilDynamiquePage() {
       });
       router.refresh();
     } catch (err: any) {
-      setApiError(err.message || "Erreur lors de la mise à jour du profil.");
+      setApiError(err.message ?? "Erreur lors de la mise à jour du profil.");
     } finally {
       setIsSaving(false);
     }
@@ -134,7 +134,7 @@ export default function ProfilDynamiquePage() {
       await apiClient.delete(`/user/${userId}`);
       router.push("/");
     } catch (err: any) {
-      setApiError(err.message || "Erreur lors de la suppression du compte.");
+      setApiError(err.message ?? "Erreur lors de la suppression du compte.");
     }
   }
 

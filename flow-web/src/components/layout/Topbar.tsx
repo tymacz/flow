@@ -69,13 +69,13 @@ export function Topbar() {
                   <Avatar className="border-border h-9 w-9 border">
                     {/* On passe l'URL de l'image Supabase récupérée de la BDD */}
                     <AvatarImage
-                      src={session.user.image || ""}
-                      alt={session.user.name || "Avatar"}
+                      src={session.user.image ?? ""}
+                      alt={session.user.name ?? "Avatar"}
                     />
                     {/* Si pas d'image, on affiche la première lettre de son prénom */}
                     <AvatarFallback className="bg-primary/10 text-primary font-semibold uppercase">
-                      {session.user.prenom?.charAt(0) ||
-                        session.user.name?.charAt(0) ||
+                      {session.user.prenom?.charAt(0) ??
+                        session.user.name?.charAt(0) ??
                         "U"}
                     </AvatarFallback>
                   </Avatar>

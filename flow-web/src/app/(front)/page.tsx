@@ -56,8 +56,8 @@ export default function PublicHomePage() {
         ]);
 
         // Extraction des données en prenant en compte une éventuelle encapsulation dans un objet "data" (pagination)
-        const articlesList = articlesRes.data || articlesRes;
-        const activitiesList = activitiesRes.data || activitiesRes;
+        const articlesList = articlesRes.data ?? articlesRes;
+        const activitiesList = activitiesRes.data ?? activitiesRes;
 
         // On ne garde par exemple que les 3 ou 4 derniers éléments pour la page d'accueil
         setArticles(
@@ -148,7 +148,7 @@ export default function PublicHomePage() {
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {activities.map((activity) => {
-                  const id = activity._id || activity.id;
+                  const id = activity._id ?? activity.id;
                   return (
                     <div
                       key={id}
@@ -211,7 +211,7 @@ export default function PublicHomePage() {
             ) : (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {articles.map((article) => {
-                  const id = article._id || article.id;
+                  const id = article._id ?? article.id;
                   return (
                     <article
                       key={id}

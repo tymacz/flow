@@ -53,15 +53,15 @@ export default function ProgressionPage() {
         ]);
 
         // Pour l'humeur : Laravel renvoie maintenant le tableau directement
-        setMoodHistory(moodRes || []);
+        setMoodHistory(moodRes ?? []);
 
         // Pour les activités : Laravel renvoie un objet avec "stats", "score", et "history"
         // On va cibler directement activityRes.history
-        setActivityHistory(activityRes?.history || []);
+        setActivityHistory(activityRes?.history ?? []);
       } catch (err: any) {
         console.error("Détail de l'erreur API :", err);
         // Affiche le message d'erreur réel reçu du serveur ou de l'API
-        setError(err.message || "Erreur inconnue lors du chargement.");
+        setError(err.message ?? "Erreur inconnue lors du chargement.");
       } finally {
         setIsLoading(false);
       }
@@ -130,7 +130,7 @@ export default function ProgressionPage() {
             <div className="text-2xl font-bold">
               {/* Le reduce fonctionnera toujours maintenant car on est sûr à 100% que c'est un tableau */}
               {activityHistory.reduce(
-                (acc, curr) => acc + (curr.duree || 0),
+                (acc, curr) => acc + (curr.duree ?? 0),
                 0,
               )}{" "}
               min
@@ -165,12 +165,12 @@ export default function ProgressionPage() {
                 </TableHeader>
                 <TableBody>
                   {activityHistory.slice(0, 5).map((act, index) => (
-                    <TableRow key={act.id || index}>
+                    <TableRow key={act.id ?? index}>
                       <TableCell className="font-medium">
-                        {act.title || "Séance sans titre"}
+                        {act.title ?? "Séance sans titre"}
                       </TableCell>
-                      <TableCell>{act.duration_minutes || 0} min</TableCell>
-                      <TableCell>{act.date || "-"}</TableCell>
+                      <TableCell>{act.duration_minutes ?? 0} min</TableCell>
+                      <TableCell>{act.date ?? "-"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -203,7 +203,7 @@ export default function ProgressionPage() {
                 </TableHeader>
                 <TableBody>
                   {moodHistory.slice(0, 5).map((mood, index) => (
-                    <TableRow key={mood.id || index}>
+                    <TableRow key={mood.id ?? index}>
                       <TableCell>
                         <span className="text-lg">
                           {mood.mood_value >= 4
@@ -213,7 +213,7 @@ export default function ProgressionPage() {
                               : "😞"}
                         </span>
                       </TableCell>
-                      <TableCell>{mood.note || "Pas de commentaire"}</TableCell>
+                      <TableCell>{mood.note ?? "Pas de commentaire"}</TableCell>
                       <TableCell>
                         {mood.created_at
                           ? new Date(mood.created_at).toLocaleDateString(

@@ -52,7 +52,7 @@ export default function ExercicesPage() {
       try {
         setIsLoading(true);
         const response = await apiClient.get<any>("/activities");
-        const items = response.data || response;
+        const items = response.data ?? response;
 
         // On s'assure d'avoir un tableau
         const dataArray = Array.isArray(items) ? items : [];
@@ -60,7 +60,7 @@ export default function ExercicesPage() {
         setFilteredActivities(dataArray);
       } catch (err: any) {
         setError(
-          err.message || "Impossible de charger le catalogue d'exercices.",
+          err.message ?? "Impossible de charger le catalogue d'exercices.",
         );
       } finally {
         setIsLoading(false);
@@ -77,7 +77,7 @@ export default function ExercicesPage() {
 
       const matchesSearch = title.includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedCategory === "Toutes" || category === selectedCategory;
+        selectedCategory === "Toutes" ?? category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
