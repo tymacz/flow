@@ -53,7 +53,7 @@ jobs:
   deploy:
     name: Build & Deploy sur Serveur Linux Privé
     needs: ci # ATTENTION : Ce job attend que 'ci' soit validé
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, x64]
 
     steps:
       - name: Récupération des sources
