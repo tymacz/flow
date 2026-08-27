@@ -3,4 +3,5 @@ import { handlers } from "@/server/auth";
 export const { GET, POST } = handlers;
 
 export const authOptions = {
-  trustHost:true,};
+  trustHost: true,
+};

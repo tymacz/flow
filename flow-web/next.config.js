@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -11,8 +11,8 @@ const nextConfig = {
     return [
       {
         // Tout appel vers /api/... côté client sera redirigé vers le backend Docker
-        source: '/api/:path*',
-        destination: 'http://backend:8000/api/:path*',
+        source: "/api/:path*",
+        destination: "http://backend:8000/api/:path*",
       },
     ];
   },

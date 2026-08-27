@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Search, MoreHorizontal, Pencil, Trash2, Loader2, PlayCircle, AlertCircle } from "lucide-react";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Loader2,
+  PlayCircle,
+  AlertCircle,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +59,10 @@ export default function ActivitesCrudPage() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [activiteToDelete, setActiviteToDelete] = useState<{ id: string; titre: string } | null>(null);
+  const [activiteToDelete, setActiviteToDelete] = useState<{
+    id: string;
+    titre: string;
+  } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // CHARGEMENT DEPUIS LARAVEL
@@ -95,8 +107,12 @@ export default function ActivitesCrudPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Activités & Exercices</h1>
-          <p className="text-muted-foreground">Gérez le catalogue des entraînements de Flow.</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Activités & Exercices
+          </h1>
+          <p className="text-muted-foreground">
+            Gérez le catalogue des entraînements de Flow.
+          </p>
         </div>
         <Button asChild className="gap-2">
           <Link href="/admin/activites/nouveau">
@@ -107,13 +123,13 @@ export default function ActivitesCrudPage() {
       </div>
 
       {apiError && (
-        <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-4 text-destructive">
+        <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-md p-4">
           <AlertCircle className="h-5 w-5" />
           <p className="text-sm font-medium">{apiError}</p>
         </div>
       )}
 
-      <div className="rounded-md border bg-background">
+      <div className="bg-background rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -127,30 +143,36 @@ export default function ActivitesCrudPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                  <Loader2 className="text-muted-foreground mx-auto h-6 w-6 animate-spin" />
                 </TableCell>
               </TableRow>
             ) : activites.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-muted-foreground h-32 text-center"
+                >
                   Aucune activité trouvée.
                 </TableCell>
               </TableRow>
             ) : (
               activites.map((activite) => {
-                const displayTitle = activite.titre ?? activite.title ?? "Sans titre";
-                const displayCategory = activite.categorie ?? activite.category ?? "Non classé";
-                const displayDuration = activite.duree_minutes ?? activite.duration ?? 0;
+                const displayTitle =
+                  activite.titre ?? activite.title ?? "Sans titre";
+                const displayCategory =
+                  activite.categorie ?? activite.category ?? "Non classé";
+                const displayDuration =
+                  activite.duree_minutes ?? activite.duration ?? 0;
                 const realId = activite._id || activite.id;
 
                 return (
                   <TableRow key={realId}>
-                    <TableCell className="font-medium flex items-center gap-3">
-                      <PlayCircle className="h-8 w-8 text-muted-foreground/50" />
+                    <TableCell className="flex items-center gap-3 font-medium">
+                      <PlayCircle className="text-muted-foreground/50 h-8 w-8" />
                       {displayTitle}
                     </TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                      <span className="bg-primary/10 text-primary inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold">
                         {displayCategory}
                       </span>
                     </TableCell>
@@ -166,14 +188,19 @@ export default function ActivitesCrudPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild className="cursor-pointer">
-                            <Link href={`/admin/activites/${realId}/editer`} className="flex items-center gap-2">
+                            <Link
+                              href={`/admin/activites/${realId}/editer`}
+                              className="flex items-center gap-2"
+                            >
                               <Pencil className="h-4 w-4" />
                               Modifier
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => openDeleteModal(realId, displayTitle)}
-                            className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive flex items-center gap-2"
+                          <DropdownMenuItem
+                            onClick={() =>
+                              openDeleteModal(realId, displayTitle)
+                            }
+                            className="text-destructive focus:bg-destructive/10 focus:text-destructive flex cursor-pointer items-center gap-2"
                           >
                             <Trash2 className="h-4 w-4" />
                             Supprimer
@@ -189,18 +216,29 @@ export default function ActivitesCrudPage() {
         </Table>
       </div>
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer cette activité ?</AlertDialogTitle>
             <AlertDialogDescription>
-              L&apos;activité <strong className="text-foreground">{activiteToDelete?.titre}</strong> ne sera plus disponible dans l&apos;application mobile. Cette action est irréversible.
+              L&apos;activité{" "}
+              <strong className="text-foreground">
+                {activiteToDelete?.titre}
+              </strong>{" "}
+              ne sera plus disponible dans l&apos;application mobile. Cette
+              action est irréversible.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => { e.preventDefault(); void handleDeleteConfirm(); }}
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void handleDeleteConfirm();
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
