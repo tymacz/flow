@@ -1,3 +1,11 @@
+## [1.0.4](https://github.com/tymacz/flow/compare/v1.0.3...v1.0.4) (2026-08-27)
+
+
+### Bug Fixes
+
+* code ([e88007f](https://github.com/tymacz/flow/commit/e88007fc704efa74baa5d98348bb0b2c7b49c183))
+* code ([188a459](https://github.com/tymacz/flow/commit/188a4595f537b031320f00edce1e0e566b407264))
+
 ## [1.0.3](https://github.com/tymacz/flow/compare/v1.0.2...v1.0.3) (2026-08-27)
 
 ### Bug Fixes
