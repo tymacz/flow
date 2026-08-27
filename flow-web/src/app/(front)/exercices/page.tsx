@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PlayCircle, Clock, AlertCircle, Search, Filter } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import Image from 'next/image';
 import {
   Select,
   SelectContent,
@@ -36,7 +37,7 @@ export default function ExercicesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Toutes");
 
-  // Liste des catégories disponibles (tu peux l'adapter selon celles de ta BDD)
+  // Liste des catégories disponibles 
   const categories = [
     "Toutes",
     "HIIT",
@@ -60,7 +61,7 @@ export default function ExercicesPage() {
         setFilteredActivities(dataArray);
       } catch (err: any) {
         setError(
-          err.message ?? "Impossible de charger le catalogue d'exercices.",
+          err.message ?? "Impossible de charger le catalogue d&apos;exercices.",
         );
       } finally {
         setIsLoading(false);
@@ -176,7 +177,7 @@ export default function ExercicesPage() {
                   >
                     <div className="bg-muted relative aspect-[4/3] w-full overflow-hidden">
                       {activity.image_url ? (
-                        <img
+                        <Image
                           src={activity.image_url}
                           alt={displayTitle}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

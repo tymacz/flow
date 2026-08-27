@@ -15,6 +15,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { apiClient } from "@/lib/api-client";
+import Image from "next/image";
 
 interface Article {
   _id: string;
@@ -156,7 +157,7 @@ export default function PublicHomePage() {
                     >
                       <div className="bg-muted relative aspect-video w-full overflow-hidden">
                         {activity.image_url ? (
-                          <img
+                          <Image
                             src={activity.image_url}
                             alt={activity.titre}
                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

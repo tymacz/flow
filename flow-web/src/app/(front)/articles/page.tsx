@@ -7,11 +7,11 @@ import {
   Search,
   User,
   Tag,
-  Loader2,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
+import Image from "next/image";
 
 interface Article {
   _id: string;
@@ -125,7 +125,7 @@ export default function ArticlesPage() {
                     {/* Image */}
                     <div className="bg-muted aspect-video w-full overflow-hidden">
                       {article.image_url ? (
-                        <img
+                        <Image
                           src={article.image_url}
                           alt={displayTitle}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -124,7 +124,7 @@ export default function LoginForm() {
               href="/inscription"
               className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
             >
-              S'inscrire
+              S&apos;inscrire
             </Link>
           </div>
         </form>

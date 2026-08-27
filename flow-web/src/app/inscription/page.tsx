@@ -86,7 +86,7 @@ export default function InscriptionPage() {
       }
     } catch (error: any) {
       setApiError(
-        error.message ?? "Une erreur est survenue lors de l'inscription.",
+        error.message ?? "Une erreur est survenue lors de l&apos;inscription.",
       );
     } finally {
       setIsLoading(false);
