@@ -18,6 +18,17 @@ const nextConfig = {
       ],
     };
   },
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'https://byxhmtkvstrvpljeawaa.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
