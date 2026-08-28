@@ -89,7 +89,7 @@ export default function PublicHomePage() {
             Application Flow disponible
           </span>
           <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-4xl font-extrabold tracking-tight text-transparent md:text-5xl">
-            Trouvez votre équilibre, optimisez votre bien-être
+            Trouvez votre équilibre, optimisez votre bien-être (test)
           </h1>
           <p className="text-muted-foreground text-lg">
             Découvrez nos programmes de mobilité, nos entraînements guidés et
