@@ -16,7 +16,7 @@ class GLPIService
     {
         $this->baseUrl = rtrim((string) config('services.glpi.url', 'http://glpi/apirest.php'), '/');
         $this->appToken = (string) config('services.glpi.app_token', '');
-        $this->userToken = (string) config('services.glpi.user_token', '');
+        $this->userToken = config('services.glpi.user_token') ?? env('GLPI_USER_TOKEN');
     }
 
 
