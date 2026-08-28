@@ -45,7 +45,7 @@ services:
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
       - MONGODB_DATABASE=flow_db
-      - GLPI_USER_TOKEN=fAv7CEZoSSOKEwUxQsqciLgA9IxiFAvxOu2ykR0i
+      - GLPI_USER_TOKEN=jn1EAUtP9HC8ElvK1CRaSNuVvMOBDV4EkGl5GOTv
       - GLPI_API_URL=http://cesizen_glpi/apirest.php
       - MONGODB_URI=mongodb://mongo:27017/flow_db
     depends_on:
@@ -75,33 +75,6 @@ services:
     networks:
       - cesizen_net
 
-  glpi_db:
-    image: mariadb:10.11
-    container_name: cesizen_glpi_db
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=root_secret
-      - MYSQL_DATABASE=glpidb
-      - MYSQL_USER=glpi_user
-      - MYSQL_PASSWORD=glpi_secret
-    volumes:
-      - glpi_db_data:/var/lib/mysql
-    networks:
-      - cesizen_net
-
-  glpi:
-    image: elestio/glpi:latest
-    container_name: cesizen_glpi
-    restart: always
-    ports:
-      - "8080:80"
-    environment:
-      - TIMEZONE=Europe/Paris
-    depends_on:
-      - glpi_db
-    networks:
-      - cesizen_net
-
 networks:
   cesizen_net:
     driver: bridge
@@ -109,4 +82,3 @@ networks:
 volumes:
   db_data:
   mongo_data:
-  glpi_db_data:
