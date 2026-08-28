@@ -45,6 +45,8 @@ services:
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
       - MONGODB_DATABASE=flow_db
+      - GLPI_USER_TOKEN=fAv7CEZoSSOKEwUxQsqciLgA9IxiFAvxOu2ykR0i
+      - GLPI_API_URL=http://cesizen_glpi/apirest.php
       - MONGODB_URI=mongodb://mongo:27017/flow_db
     depends_on:
       - db
